@@ -78,10 +78,10 @@ const productSchema = new Schema<IProduct>(
     },
     price: {
       type: Number,
-      required: true,
       min: [0, "Giá phải >= 0"],
     },
     originalPrice: {
+      required: true,
       type: Number,
       min: [0, "Giá gốc phải >= 0"],
     },
@@ -134,18 +134,19 @@ const productSchema = new Schema<IProduct>(
   }
 );
 
-// Middleware: tự động tính discountPercent hoặc price nếu bị thiếu
+// Middleware: tự động tính price nếu có discountPercent
 productSchema.pre("save", function (next) {
-  if (this.originalPrice && this.price && !this.discountPercent) {
-    this.discountPercent = Math.round(
-      ((this.originalPrice - this.price) / this.originalPrice) * 100
-    );
-  }
-
-  if (this.originalPrice && this.discountPercent && !this.price) {
+  // Nếu có originalPrice + discountPercent -> tính price
+  if (this.originalPrice && this.discountPercent != null && !this.price) {
     this.price = Math.round(
       this.originalPrice * (1 - this.discountPercent / 100)
     );
+  }
+
+  // Nếu chỉ có originalPrice -> mặc định chưa giảm
+  if (this.originalPrice && !this.price && this.discountPercent == null) {
+    this.price = this.originalPrice;
+    this.discountPercent = 0;
   }
 
   next();
