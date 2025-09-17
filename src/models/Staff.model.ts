@@ -1,49 +1,82 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model } from "mongoose";
+import { hashPassword, comparePassword } from "../middlewares/hashPassword";
+import { IStaff } from "../types/staff.type";
 
-const staffSchema = new Schema({
+const staffSchema = new Schema<IStaff>( 
+  {
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
+      minlength: 3,
+      maxlength: 20,
+      match: [
+        /^(?![_.])(?!.*[_.]{2})[a-z0-9._]+(?<![_.])$/,
+        "Username chỉ được chứa chữ thường, số, dấu gạch dưới hoặc chấm, không bắt đầu/kết thúc bằng '.' hoặc '_' và không có ký tự đặc biệt",
+      ],
+    },
+    password: {
+      type: String,
+      required: true,
+      minLength: 8,
+      match: [
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        "Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt",
+      ],
+    },
     full_name: {
-        type: String,
-        required: true,
-        trim: true,
-        minLength: 3,
-        maxLength: 100
+      type: String,
+      required: true,
+      trim: true,
+      minLength: 3,
+      maxLength: 100,
     },
     email: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true,
-        lowercase: true,
-        match: [/^\S+@\S+\.\S+$/, 'Email không hợp lệ']
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
+      match: [/^\S+@\S+\.\S+$/, "Email không hợp lệ"],
     },
     phone: {
-        type: String,
-        required: false,
-        trim: true,
-        match: [/^\d{10,15}$/, 'Số điện thoại không hợp lệ']
+      type: String,
+      required: false,
+      trim: true,
+      match: [/^\d{10,15}$/, "Số điện thoại không hợp lệ"],
     },
     role: {
-        type: String,
-        enum: ['admin', 'dev'],
-        default: 'dev'
+      type: String,
+      enum: ["admin", "dev"],
+      default: "dev",
     },
     salary: {
-        type: Number,
-        required: false,
-        min: 0
+      type: Number,
+      required: false,
+      min: 0,
     },
     hire_date: {
-        type: Date,
-        default: Date.now // Ngày tuyển dụng mặc định là ngày tạo
+      type: Date,
+      default: Date.now, // Ngày tuyển dụng mặc định là ngày tạo
     },
     is_active: {
-        type: Boolean,
-        default: true
-    }
-}, {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
     timestamps: true,
-    versionKey: false
-});
+    versionKey: false,
+  }
+);
 
-const Staff = model('Staff', staffSchema);
+// Gắn middleware hash password
+staffSchema.pre("save", hashPassword);
+
+// Gắn method comparePassword
+staffSchema.methods.comparePassword = comparePassword;
+
+const Staff = model("Staff", staffSchema);
 export default Staff;

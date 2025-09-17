@@ -1,50 +1,54 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model } from "mongoose";
+import { hashPassword, comparePassword } from "../middlewares/hashPassword";
 
-const customerSchema = new Schema({
-    full_name: {
-        type: String,
-        required: true,
-        trim: true,
-        minLength: 3,
-        maxLength: 100
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true,
-        lowercase: true,
-        match: [/^\S+@\S+\.\S+$/, 'Email không hợp lệ'] // Regex validate email
-    },
-    phone: {
-        type: String,
-        required: false,
-        trim: true,
-        match: [/^\d{10,15}$/, 'Số điện thoại không hợp lệ'] // chỉ cho phép 10-15 chữ số
-    },
-    address: {
-        type: String,
-        required: false,
-        trim: true,
-        maxLength: 255
-    },
-    date_of_birth: {
-        type: Date,
-        required: false
-    },
-    gender: {
-        type: String,
-        enum: ['male', 'female', 'other'], // Giới tính chỉ được chọn 1 trong 3
-        required: false
-    },
-    is_active: {
-        type: Boolean,
-        default: true // Mặc định khách hàng đang hoạt động
-    }
-}, {
-    timestamps: true, // Tự động tạo createdAt, updatedAt
-    versionKey: false
-});
+const customerSchema = new Schema(
+    {
+        username: {
+            type: String,
+            required: true,
+            unique: true,
+            trim: true,
+            lowercase: true,
+            minlength: 3,
+            maxlength: 20,
+            match: [
+                /^(?![_.])(?!.*[_.]{2})[a-z0-9._]+(?<![_.])$/,
+                "Username chỉ được chứa chữ thường, số, dấu gạch dưới hoặc chấm, không bắt đầu/kết thúc bằng '.' hoặc '_' và không có ký tự đặc biệt"
+            ]
+        },
+        password: {
+            type: String,
+            required: true,
+            minLength: 8,
+            match: [
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                "Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt"
+            ]
+        },
 
-const Customer = model('Customer', customerSchema);
+        full_name: { type: String, required: true, trim: true, minLength: 3, maxLength: 100 },
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+            trim: true,
+            lowercase: true,
+            match: [/^\S+@\S+\.\S+$/, "Email không hợp lệ"],
+        },
+        phone: { type: String, trim: true, match: [/^\d{10,15}$/, "Số điện thoại không hợp lệ"] },
+        address: { type: String, trim: true, maxLength: 255 },
+        date_of_birth: { type: Date },
+        gender: { type: String, enum: ["male", "female", "other"] },
+        is_active: { type: Boolean, default: true },
+    },
+    { timestamps: true, versionKey: false }
+);
+
+// Gắn middleware hash password
+customerSchema.pre("save", hashPassword);
+
+// Gắn method comparePassword
+customerSchema.methods.comparePassword = comparePassword;
+
+const Customer = model("Customer", customerSchema);
 export default Customer;

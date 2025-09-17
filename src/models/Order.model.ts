@@ -1,61 +1,133 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model } from "mongoose";
+import { IOrder, IOrderItem } from "../types/order.type";
 
-const orderSchema = new Schema({
-  customer: {
-    type: Schema.Types.ObjectId,
-    ref: 'Customer', // Tham chiếu đến khách hàng
-    required: true
-  },
-  staff: {
-    type: Schema.Types.ObjectId,
-    ref: 'Staff', // Nhân viên xử lý đơn
-    required: false
-  },
-  items: [
-    {
+// OrderItem schema
+const orderItemSchema = new Schema<IOrderItem>(
+  {
+    product: {
       type: Schema.Types.ObjectId,
-      ref: 'OrderItem',
-      required: true
-    }
-  ],
-  status: {
-    type: String,
-    enum: ['pending', 'processing', 'completed', 'cancelled'],
-    default: 'pending'
+      ref: "Product",
+      required: [true, "Sản phẩm là bắt buộc"],
+    },
+    quantity: {
+      type: Number,
+      required: true,
+      min: [1, "Số lượng phải ít nhất là 1"],
+      default: 1,
+    },
+    price: {
+      type: Number,
+      required: true,
+      min: [0, "Giá không hợp lệ"],
+    },
+    total: {
+      type: Number,
+      required: true,
+      min: [0, "Tổng tiền không hợp lệ"],
+    },
   },
-  payment_method: {
-    type: String,
-    enum: [
-      'cash_on_delivery',
-      'zalopay',
-      'vnpay',
-      'shopeepay',
-      'momo',
-      'atm',
-      'visa'
-    ],
-    required: true
-  },
-  total_amount: {
-    type: Number,
-    required: true,
-    min: 0
-  },
-  shipping_address: {
-    type: String,
-    required: true,
-    trim: true,
-    maxLength: 255
-  },
-  notes: {
-    type: String,
-    required: false,
-    maxLength: 500
+  {
+    timestamps: true,
+    versionKey: false,
   }
-}, {
-  timestamps: true,
-  versionKey: false
+);
+
+const OrderItem = model("OrderItem", orderItemSchema);
+
+// Order schema
+const orderSchema = new Schema<IOrder>(
+  {
+    customer: {
+      type: Schema.Types.ObjectId,
+      ref: "Customer",
+      required: [true, "Khách hàng là bắt buộc"],
+    },
+    staff: {
+      type: Schema.Types.ObjectId,
+      ref: "Staff", // nhân viên xử lý đơn
+    },
+    items: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "OrderItem",
+          required: true,
+        },
+      ],
+      validate: {
+        validator: (arr: Schema.Types.ObjectId[]) => arr.length > 0,
+        message: "Đơn hàng phải có ít nhất 1 sản phẩm",
+      },
+    },
+    status: {
+      type: String,
+      enum: ["pending", "processing", "shipping", "completed", "cancelled"],
+      default: "pending",
+    },
+    payment_method: {
+      type: String,
+      enum: [
+        "cash_on_delivery",
+        "zalopay",
+        "vnpay",
+        "shopeepay",
+        "momo",
+        "atm",
+        "visa",
+      ],
+      required: [true, "Phương thức thanh toán là bắt buộc"],
+    },
+    total_amount: {
+      type: Number,
+      required: true,
+      min: [0, "Tổng tiền đơn hàng không hợp lệ"],
+    },
+    shipping_address: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: [10, "Địa chỉ giao hàng quá ngắn"],
+      maxlength: [255, "Địa chỉ giao hàng quá dài"],
+    },
+    recipient_name: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: [2, "Tên người nhận quá ngắn"],
+      maxlength: [100, "Tên người nhận tối đa 100 ký tự"],
+    },
+    recipient_phone: {
+      type: String,
+      required: true,
+      match: [/^\d{10,15}$/, "Số điện thoại người nhận không hợp lệ"],
+    },
+    notes: {
+      type: String,
+      maxlength: [500, "Ghi chú tối đa 500 ký tự"],
+    },
+  },
+  {
+    timestamps: true,
+    versionKey: false,
+  }
+);
+
+// Middleware: đảm bảo total_amount = tổng của items
+orderSchema.pre("save", async function (next) {
+  try {
+    if (this.items && this.items.length > 0) {
+      const OrderItemModel = this.model("OrderItem");
+      const items = await OrderItemModel.find({ _id: { $in: this.items } })
+
+      const total = items.reduce((sum, item) => sum + (item as any).total, 0);
+      this.total_amount = total;
+    }
+    next();
+  } catch (err) {
+    next(err instanceof Error ? err : new Error(String(err)));
+  }
 });
 
-const Order = model('Order', orderSchema);
-export default Order;
+const Order = model("Order", orderSchema);
+
+export { Order, OrderItem };
