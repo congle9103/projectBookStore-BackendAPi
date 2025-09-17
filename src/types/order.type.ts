@@ -26,6 +26,7 @@ export interface IOrder {
     | "visa";
   total_amount: number;
   shipping_address: string;
+  city: string;
   recipient_name: string;
   recipient_phone: string;
   notes?: string;

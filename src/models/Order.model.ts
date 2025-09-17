@@ -89,6 +89,15 @@ const orderSchema = new Schema<IOrder>(
       minlength: [10, "Địa chỉ giao hàng quá ngắn"],
       maxlength: [255, "Địa chỉ giao hàng quá dài"],
     },
+    city: {
+      type: String,
+      required: true,
+      trim: true,
+      enum: {
+        values: ["Hà Nội", "TP Hồ Chí Minh", "Đà Nẵng", "Cần Thơ", "Khác"],
+        message: "{VALUE} không phải là thành phố hợp lệ",
+      },
+    },
     recipient_name: {
       type: String,
       required: true,
@@ -117,7 +126,7 @@ orderSchema.pre("save", async function (next) {
   try {
     if (this.items && this.items.length > 0) {
       const OrderItemModel = this.model("OrderItem");
-      const items = await OrderItemModel.find({ _id: { $in: this.items } })
+      const items = await OrderItemModel.find({ _id: { $in: this.items } });
 
       const total = items.reduce((sum, item) => sum + (item as any).total, 0);
       this.total_amount = total;
