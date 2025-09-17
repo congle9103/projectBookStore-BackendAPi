@@ -94,8 +94,7 @@ const orderSchema = new Schema<IOrder>(
       required: true,
       trim: true,
       enum: {
-        values: ["Hà Nội", "TP Hồ Chí Minh", "Đà Nẵng", "Cần Thơ", "Khác"],
-        message: "{VALUE} không phải là thành phố hợp lệ",
+        values: ["Hà Nội", "TP Hồ Chí Minh", "Đà Nẵng"],
       },
     },
     recipient_name: {
