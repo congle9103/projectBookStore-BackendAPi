@@ -4,6 +4,10 @@ import path from 'path';
 import cors from 'cors';
 import productsRouter from './routes/v1/products.route';
 import categoriesRouter from './routes/v1/categories.route';
+import comboRouter from './routes/v1/combos.route';    
+import voucherController from './routes/v1/vouchers.route';    
+import customerRouter from './routes/v1/customers.route';    
+import orderRouter from './routes/v1/orders.route';
 
 const app = express();
 
@@ -21,6 +25,11 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 app.use('/api/v1/products', productsRouter);
 app.use('/api/v1/categories', categoriesRouter);
+app.use('/api/v1/vouchers', voucherController);
+app.use('/api/v1/combos', comboRouter);
+app.use('/api/v1/customers', customerRouter);
+app.use('/api/v1/orders', orderRouter);
+
 
 app.get('/', (req, res) => {
   res.status(200).json({
