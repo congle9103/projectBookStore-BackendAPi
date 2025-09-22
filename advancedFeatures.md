@@ -31,4 +31,4 @@
 ## 📌 Ghi chú
 - Các tính năng voucher & tích điểm có thể kết hợp:  
   - Ví dụ: khách hàng dùng voucher + vẫn được tích điểm cho phần còn lại của đơn hàng.  
-- Nên có trang **Quản lý voucher** và **Lịch sử tích điểm** trong tài khoản khách hàng.  
+- Có trang **Quản lý voucher** và **Lịch sử tích điểm** trong tài khoản khách hàng.  
