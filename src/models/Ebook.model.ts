@@ -1,34 +1,21 @@
 import { Schema, model } from "mongoose";
-import { IProduct } from "../types/product.type";
+import { IEBook } from "../types/ebook.type";
 
-const productSchema = new Schema<IProduct>(
+const eBookSchema = new Schema<IEBook>(
   {
-    product_name: {
+    // Thông tin cơ bản
+    title: {
       type: String,
-      required: [true, "Tên sản phẩm là bắt buộc"],
+      required: [true, "Tên ebook là bắt buộc"],
       unique: true,
       trim: true,
-      minlength: [2, "Tên sản phẩm quá ngắn"],
-      maxlength: [255, "Tên sản phẩm tối đa 255 ký tự"],
+      minlength: [2, "Tên ebook quá ngắn"],
+      maxlength: [255, "Tên ebook tối đa 255 ký tự"],
     },
     category_id: {
       type: Schema.Types.ObjectId,
       ref: "Category",
       required: true,
-    },
-    supplier: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: [2, "Tên nhà cung cấp quá ngắn"],
-      maxlength: [255, "Tên nhà cung cấp tối đa 255 ký tự"],
-    },
-    publisher: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: [2, "Tên nhà xuất bản quá ngắn"],
-      maxlength: [255, "Tên nhà xuất bản tối đa 255 ký tự"],
     },
     authors: {
       type: [String],
@@ -38,9 +25,11 @@ const productSchema = new Schema<IProduct>(
         message: "Phải có ít nhất một tác giả",
       },
     },
-
-    // Thông tin sách
-    pages: { type: Number, min: 1, max: 3000 },
+    publisher: {
+      type: String,
+      trim: true,
+      maxlength: 255,
+    },
     publicationYear: {
       type: Number,
       min: [1900, "Năm xuất bản quá cũ"],
@@ -52,17 +41,20 @@ const productSchema = new Schema<IProduct>(
       maxlength: 100,
       enum: ["Tiếng Việt", "Tiếng Anh", "Tiếng Nhật", "Tiếng Hàn", "Khác"],
     },
-    format: {
+
+    // File ebook
+    fileUrl: {
       type: String,
+      required: [true, "Ebook phải có file"],
       trim: true,
-      enum: ["Bìa mềm", "Bìa cứng", "Ebook", "Khác"],
+      match: [/^(http|https):\/\/[^ "]+$/, "File URL phải hợp lệ"],
     },
-    dimensions: {
+    fileFormat: {
       type: String,
-      trim: true,
-      match: [/^[0-9]+x[0-9]+x[0-9]+(cm|mm)?$/, "Định dạng: rộngxcaoxdày"],
+      enum: ["pdf", "epub", "mobi"],
+      required: true,
     },
-    weight: { type: Number, min: 10, max: 5000 },
+    fileSize: { type: Number, min: 1 }, // KB hoặc MB
 
     // Media
     thumbnails: {
@@ -75,25 +67,11 @@ const productSchema = new Schema<IProduct>(
       },
     },
 
-    // 👉 Cross sale: dịch vụ đi kèm
-    crossSaleOptions: [
-      {
-        name: { type: String, required: true, trim: true },
-        price: { type: Number, required: true, min: 0 },
-        thumbnail: { type: String, trim: true },
-        isActive: { type: Boolean, default: true },
-      },
-    ],
-
     // Giá & khuyến mãi
     originalPrice: { type: Number, required: true, min: 0 },
     discountPercent: { type: Number, min: 0, max: 90 },
     price: { type: Number, min: 0 },
     voucher: { type: Schema.Types.ObjectId, ref: "Voucher" },
-
-    // Quản lý tồn kho
-    stock: { type: Number, required: true, min: 0, default: 0 },
-    sold: { type: Number, min: 0, default: 0 },
 
     // Marketing
     isNew: { type: Boolean, default: false },
@@ -101,6 +79,24 @@ const productSchema = new Schema<IProduct>(
     isFlashSale: { type: Boolean, default: false },
     tags: { type: [String], default: [] },
     highlights: { type: [String], default: [] },
+
+    // Feedback (rating + review)
+    feedbacks: [
+      {
+        customer: {
+          type: Schema.Types.ObjectId,
+          ref: "Customer",
+          required: true,
+        },
+        rating: { type: Number, required: true, min: 1, max: 5 },
+        comment: { type: String, trim: true, maxlength: 1000 },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
+
+    // Thống kê rating
+    ratingsAverage: { type: Number, min: 1, max: 5, default: 0 },
+    ratingsQuantity: { type: Number, default: 0 },
 
     // Mô tả
     description: { type: String, maxlength: 5000 },
@@ -118,14 +114,9 @@ const productSchema = new Schema<IProduct>(
     // Trạng thái
     status: {
       type: String,
-      enum: ["available", "out_of_stock", "discontinued"],
+      enum: ["available", "unavailable", "discontinued"],
       default: "available",
     },
-
-    // Thống kê
-    views: { type: Number, default: 0 },
-    ratingsAverage: { type: Number, min: 1, max: 5, default: 0 },
-    ratingsQuantity: { type: Number, default: 0 },
 
     // Quản trị
     createdBy: { type: Schema.Types.ObjectId, ref: "Staff" },
@@ -138,11 +129,9 @@ const productSchema = new Schema<IProduct>(
 );
 
 // Middleware: tự động tính price nếu có discountPercent
-productSchema.pre("save", function (this: IProduct ,next) {
+eBookSchema.pre("save", function (this: IEBook, next) {
   if (this.originalPrice && this.discountPercent != null) {
-    this.price = Math.round(
-      this.originalPrice * (1 - this.discountPercent / 100)
-    );
+    this.price = Math.round(this.originalPrice * (1 - this.discountPercent / 100));
   }
   if (this.originalPrice && this.discountPercent == null) {
     this.price = this.originalPrice;
@@ -151,5 +140,5 @@ productSchema.pre("save", function (this: IProduct ,next) {
   next();
 });
 
-const Product = model("Product", productSchema);
-export default Product;
+const EBook = model("EBook", eBookSchema);
+export default EBook;

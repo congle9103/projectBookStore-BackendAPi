@@ -14,7 +14,7 @@ const staffSchema = new Schema<IStaff>(
       maxlength: 20,
       match: [
         /^(?![_.])(?!.*[_.]{2})[a-z0-9._]+(?<![_.])$/,
-        "Username chỉ được chứa chữ thường, số, dấu gạch dưới hoặc chấm, không bắt đầu/kết thúc bằng '.' hoặc '_' và không có ký tự đặc biệt",
+        "Username không được bắt đầu/kết thúc bằng '.' hoặc '_' và không có ký tự đặc biệt",
       ],
     },
     password: {
