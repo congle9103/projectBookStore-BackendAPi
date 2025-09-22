@@ -50,6 +50,8 @@ export interface IProduct {
   ratingsAverage?: number;
   ratingsQuantity?: number;
 
+  reviews?: Types.ObjectId[];
+
   createdBy?: Types.ObjectId;
   updatedBy?: Types.ObjectId;
 

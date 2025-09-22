@@ -61,15 +61,8 @@ const customerSchema = new Schema(
         is_active: { type: Boolean, default: true }, // Trạng thái
       },
     ],
-    // 👉 Feedback: khách hàng đánh giá sách
-    feedbacks: [
-      {
-        book: { type: Schema.Types.ObjectId, ref: "Book", required: true }, // sách được đánh giá
-        rating: { type: Number, required: true, min: 1, max: 5 }, // số sao
-        comment: { type: String, trim: true, maxlength: 1000 }, // nội dung đánh giá
-        createdAt: { type: Date, default: Date.now },
-      },
-    ],
+    feedbacks: [{ type: Schema.Types.ObjectId, ref: "Review" }],
+
     is_active: { type: Boolean, default: true },
   },
   { timestamps: true, versionKey: false }

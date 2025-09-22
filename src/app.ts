@@ -8,6 +8,7 @@ import combosRouter from './routes/v1/combos.route';
 import vouchersController from './routes/v1/vouchers.route';    
 import customersRouter from './routes/v1/customers.route';    
 import ordersRouter from './routes/v1/orders.route';
+import reviewsRouter from './routes/v1/reviews.route';
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use('/api/v1/vouchers', vouchersController);
 app.use('/api/v1/combos', combosRouter);
 app.use('/api/v1/customers', customersRouter);
 app.use('/api/v1/orders', ordersRouter);
+app.use('/api/v1/reviews', reviewsRouter);
 
 app.get('/', (req, res) => {
   res.status(200).json({
