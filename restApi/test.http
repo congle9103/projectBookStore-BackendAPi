@@ -1,0 +1,61 @@
+POST http://localhost:8080/api/v1/products
+Content-Type: application/json
+
+{
+  "product_name": "Lược Sử Thời Gian 1",
+  "category_id": "652f0c8f8f8f8f8f8f8f8f8f",
+  "supplier": "NXB Trẻ",
+  "publisher": "NXB Khoa Học Tự Nhiên",
+  "authors": ["Stephen Hawking"],
+  "pages": 300,
+  "publicationYear": 2021,
+  "format": "Bìa cứng",
+  "dimensions": "15x22x3cm",
+  "weight": 450,
+  "thumbnails": ["https://picsum.photos/400/400?random=100"],
+  "originalPrice": 200000,
+  "discountPercent": 10,
+  "stock": 50,
+  "slug": "luoc-su-thoi-gian-1",
+  "description": "Cuốn sách khoa học kinh điển giúp bạn hiểu về nguồn gốc và bản chất của vũ trụ.",
+  "isNew": true,
+  "isPopular": true,
+  "isFlashSale": false
+}
+
+###
+PUT http://localhost:8080/api/v1/products/68d3f292fc32900ab6847e3b
+Content-Type: application/json
+
+  {
+  "originalPrice": 100000
+}
+
+###
+DELETE http://localhost:8080/api/v1/products/68d3f4261c359bfe9b3450cb
+Content-Type: application/json
+
+###
+POST http://localhost:8080/api/v1/categories
+Content-Type: application/json  
+
+{
+  "name": "Sách Khoa Học 1",
+  "description": "Tổng hợp những cuốn sách khoa học hay và bổ ích",
+  "slug": "sach-khoa-hoc-1"
+}
+
+###
+PUT http://localhost:8080/api/v1/categories/68d3f77f1c359bfe9b3450e5
+Content-Type: application/json  
+
+{
+  "name": "Sách Khoa Học 2",
+  "description": "Tổng hợp những cuốn sách khoa học hay và bổ ích",
+  "slug": "sach-khoa-hoc-2"
+}
+
+###
+DELETE  http://localhost:8080/api/v1/categories/68d3f77f1c359bfe9b3450e5
+Content-Type: application/json  
+

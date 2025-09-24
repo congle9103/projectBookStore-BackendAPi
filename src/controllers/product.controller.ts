@@ -23,6 +23,7 @@ const findById = async (req: Request, res: Response, next: NextFunction) => {
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    console.log("📦 req.body:", req.body);
     const product = await productService.create(req.body);
     sendJsonSuccess(res, product, "Product created successfully", 201);
   } catch (error) {

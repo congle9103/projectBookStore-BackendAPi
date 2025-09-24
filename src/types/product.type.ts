@@ -24,8 +24,6 @@ export interface IProduct {
 
   thumbnails?: string[];
 
-  crossSaleOptions?: ICrossSaleOption[];
-
   originalPrice: number;
   discountPercent?: number;
   price?: number;
@@ -37,8 +35,6 @@ export interface IProduct {
   isNew?: boolean;
   isPopular?: boolean;
   isFlashSale?: boolean;
-  tags?: string[];
-  highlights?: string[];
 
   description?: string;
 
@@ -46,7 +42,6 @@ export interface IProduct {
 
   status?: "available" | "out_of_stock" | "discontinued";
 
-  views?: number;
   ratingsAverage?: number;
   ratingsQuantity?: number;
 

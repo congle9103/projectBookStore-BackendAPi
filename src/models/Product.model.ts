@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import { IProduct } from "../types/product.type";
 
-const productSchema = new Schema<IProduct>(
+const productSchema = new Schema(
   {
     product_name: {
       type: String,
@@ -77,7 +77,6 @@ const productSchema = new Schema<IProduct>(
 
     // Quản lý tồn kho
     stock: { type: Number, required: true, min: 0, default: 0 },
-    sold: { type: Number, min: 0, default: 0 },
 
     // Marketing
     isNew: { type: Boolean, default: false },
@@ -98,8 +97,7 @@ const productSchema = new Schema<IProduct>(
     },
 
     // Thống kê
-    views: { type: Number, default: 0 },
-    ratingsAverage: { type: Number, min: 1, max: 5, default: 0 },
+    ratingsAverage: { type: Number, min: 0, max: 5, default: 0 },
     ratingsQuantity: { type: Number, default: 0 },
 
     // 👉 Tham chiếu Review (mối quan hệ nhiều-nhiều)

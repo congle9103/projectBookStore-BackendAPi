@@ -2,11 +2,11 @@ import createError from "http-errors";
 import Product from "../models/Product.model";
 
 const findAll = async () => {
-  return await Product.find().populate("category");
+  return await Product.find().populate("category_id");
 };
 
 const findById = async (id: string) => {
-  const product = await Product.findById(id).populate("category");
+  const product = await Product.findById(id).populate("category_id");
   if (!product) {
     throw createError(404, "Product not found");
   }
@@ -15,16 +15,20 @@ const findById = async (id: string) => {
 
 const create = async (payload: any) => {
   const newProduct = new Product({
-    name: payload.name,
-    description: payload.description,
-    price: payload.price,
+    product_name: payload.product_name,
+    category_id: payload.category_id,
+    supplier: payload.supplier,
+    publisher: payload.publisher,
+    authors: payload.authors,
+    originalPrice: payload.originalPrice,
     stock: payload.stock,
-    category: payload.category,
     slug: payload.slug,
   });
+
   await newProduct.save();
   return newProduct;
 };
+
 
 const updateById = async (id: string, payload: any) => {
   const product = await findById(id);
