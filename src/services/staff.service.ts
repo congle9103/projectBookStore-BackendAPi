@@ -15,11 +15,12 @@ const findById = async (id: string) => {
 
 const create = async (payload: any) => {
   const newStaff = new Staff({
-    name: payload.name,
-    email: payload.email,
-    role: payload.role,
-    phone: payload.phone,
+    username: payload.username,
+    password: payload.password,
+    full_name: payload.full_name,
+    email: payload.email
   });
+
   await newStaff.save();
   return newStaff;
 };

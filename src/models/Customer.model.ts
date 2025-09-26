@@ -48,6 +48,7 @@ const customerSchema = new Schema(
       match: [/^\d{10,15}$/, "Số điện thoại không hợp lệ"],
     },
     address: { type: String, trim: true, maxLength: 255 },
+    city: { type: String, trim: true, maxLength: 100 },
     date_of_birth: { type: Date },
     gender: { type: String, enum: ["male", "female", "other"] },
     point: { type: Number, default: 0, min: 0 },

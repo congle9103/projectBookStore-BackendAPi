@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import { IProduct } from "../types/product.type";
 
-const productSchema = new Schema(
+const productSchema = new Schema<IProduct>(
   {
     product_name: {
       type: String,

@@ -15,20 +15,23 @@ const findById = async (id: string) => {
 
 const create = async (payload: any) => {
   const newCustomer = new Customer({
-    name: payload.name,
-    email: payload.email,
-    phone: payload.phone,
-    address: payload.address,
+    username: payload.username,
+    password: payload.password,
+    full_name: payload.full_name,
+    email: payload.email
   });
+
   await newCustomer.save();
   return newCustomer;
 };
 
 const updateById = async (id: string, payload: any) => {
-  const customer = await findById(id);
-  Object.assign(customer, payload);
-  await customer.save();
-  return customer;
+  const updatedCustomer = await Customer.findByIdAndUpdate(
+    id,
+    { $set: payload },
+    { new: true, runValidators: true }
+  );
+  return updatedCustomer;
 };
 
 const deleteById = async (id: string) => {

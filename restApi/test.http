@@ -1,3 +1,5 @@
+PRODUCT
+###
 POST http://localhost:8080/api/v1/products
 Content-Type: application/json
 
@@ -35,6 +37,7 @@ Content-Type: application/json
 DELETE http://localhost:8080/api/v1/products/68d3f4261c359bfe9b3450cb
 Content-Type: application/json
 
+CATEGORY
 ###
 POST http://localhost:8080/api/v1/categories
 Content-Type: application/json  
@@ -58,4 +61,104 @@ Content-Type: application/json
 ###
 DELETE  http://localhost:8080/api/v1/categories/68d3f77f1c359bfe9b3450e5
 Content-Type: application/json  
+
+CUSTOMER
+### 
+POST http://localhost:8080/api/v1/customers
+Content-Type: application/json
+
+{
+  "username": "lethic",
+  "password": "Password@123",
+  "full_name": "Lê Thị C",
+  "avatar": "https://example.com/avatar3.png",
+  "email": "lethic@example.com",
+  "phone": "0971123456",
+  "address": "789 Đường DEF, Phường 7",
+  "city": "Đà Nẵng",
+  "date_of_birth": "1998-03-10",
+  "gender": "female",
+  "point": 0,
+  "vouchers": [
+    {
+      "code": "WELCOME10",
+      "type": "percent",
+      "value": 10,
+      "quantity": 1,
+      "expired_at": "2026-01-01T00:00:00Z",
+      "is_active": true
+    }
+  ],
+  "feedbacks": [],
+  "is_active": true
+}
+
+### 
+PUT http://localhost:8080/api/v1/customers/68d51751e9b26734b64e175b
+Content-Type: application/json
+
+{
+  "full_name": "Lê Thị C Updated",
+  "phone": "0971987654",
+  "address": "789 Đường DEF, Phường 7, Quận Hải Châu",
+  "city": "Đà Nẵng",
+  "date_of_birth": "1998-03-10"
+}
+
+### 
+DELETE http://localhost:8080/api/v1/customers/68d51751e9b26734b64e175b
+Content-Type: application/json
+
+STAFF
+### 
+POST http://localhost:8080/api/v1/staffs
+Content-Type: application/json
+
+{
+  "username": "admin01",
+  "password": "Admin@123",
+  "full_name": "Nguyễn Văn Admin",
+  "email": "admin01@example.com",
+  "phone": "0912345678",
+  "role": "admin",
+  "salary": 25000000,
+  "hire_date": "2024-01-15",
+  "is_active": true
+}
+
+### 
+PUT http://localhost:8080/api/v1/staffs/68d51bed3460873ef438631b
+Content-Type: application/json
+
+{
+  "full_name": "Nguyễn Văn Admin Updated",
+  "phone": "0912987654",
+  "role": "admin",
+  "salary": 30000000
+}
+
+### 
+DELETE http://localhost:8080/api/v1/staffs/68d51bed3460873ef438631b
+Content-Type: application/json
+
+ORDER
+### 
+POST http://localhost:8080/api/v1/orders
+Content-Type: application/json
+
+{
+  "customer_id": "68d51751e9b26734b64e175b",
+  "staff_id": "68d51bed3460873ef438631b",
+  "order_items": [
+    {
+      "product_id": "68d3f292fc32900ab6847e3b",
+      "quantity": 2,
+      "price": 180000
+    }
+  ],
+  "total_amount": 360000,
+  "status": "pending",
+  "shipping_address": "789 Đường DEF, Phường 7, Quận Hải Châu, Đà Nẵng",
+  "payment_method": "credit_card"
+} 
 

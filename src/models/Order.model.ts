@@ -45,6 +45,7 @@ const orderSchema = new Schema<IOrder>(
     staff: {
       type: Schema.Types.ObjectId,
       ref: "Staff", // nhân viên xử lý đơn
+      required: true,
     },
     items: {
       type: [

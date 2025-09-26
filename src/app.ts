@@ -8,6 +8,7 @@ import vouchersController from './routes/v1/vouchers.route';
 import customersRouter from './routes/v1/customers.route';    
 import ordersRouter from './routes/v1/orders.route';
 import reviewsRouter from './routes/v1/reviews.route';
+import staffsRouter from './routes/v1/staffs.route';
 
 const app = express();
 
@@ -16,7 +17,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: [
+    "http://localhost:5173",
+    // "https://project-book-store-ui-admin.vercel.app/dashboard"
+  ],
   credentials: true
 }));
 
@@ -29,6 +33,7 @@ app.use('/api/v1/vouchers', vouchersController);
 app.use('/api/v1/customers', customersRouter);
 app.use('/api/v1/orders', ordersRouter);
 app.use('/api/v1/reviews', reviewsRouter);
+app.use('/api/v1/staffs', staffsRouter);
 
 app.get('/', (req, res) => {
   res.status(200).json({
