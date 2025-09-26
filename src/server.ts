@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 
 // Kết nối đến MongoDB
 mongoose
-.connect('mongodb://localhost:27017/dbBookStore')
+.connect('mongodb+srv://learnit91031_db_user:<db_password>@bookstore-backendapi.9mon2u8.mongodb.net/?retryWrites=true&w=majority&appName=bookStore-backendApi')
 .then(() => {
   console.log('Connected to MongoDB successfully');
   // Khởi động server
