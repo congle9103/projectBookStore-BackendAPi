@@ -147,18 +147,59 @@ POST http://localhost:8080/api/v1/orders
 Content-Type: application/json
 
 {
-  "customer_id": "68d51751e9b26734b64e175b",
-  "staff_id": "68d51bed3460873ef438631b",
-  "order_items": [
+  "customer": "66f1234abcd5678ef9012345",
+  "staff": "66f2234abcd5678ef9012345",
+  "items": [
     {
-      "product_id": "68d3f292fc32900ab6847e3b",
+      "product": "66f3234abcd5678ef9012345",
       "quantity": 2,
-      "price": 180000
+      "price": 120000
+    },
+    {
+      "product": "66f4234abcd5678ef9012345",
+      "quantity": 1,
+      "price": 300000
     }
   ],
-  "total_amount": 360000,
-  "status": "pending",
-  "shipping_address": "789 Đường DEF, Phường 7, Quận Hải Châu, Đà Nẵng",
-  "payment_method": "credit_card"
-} 
+  "payment_method": "momo",
+  "shipping_address": "123 Lý Thường Kiệt, Quận 10",
+  "city": "TP Hồ Chí Minh",
+  "recipient_name": "Nguyễn Văn A",
+  "recipient_phone": "0912345678",
+  "notes": "Giao buổi sáng"
+}
+
+### 
+PUT http://localhost:8080/api/v1/orders/68d887a3df037f9f8a66385c
+Content-Type: application/json
+
+{
+  "customer": "66f1234abcd5678ef9012345",
+  "staff": "66f2234abcd5678ef9012345",
+  "items": [
+    {
+      "product": "66f3234abcd5678ef9012345",
+      "quantity": 2,
+      "price": 120000
+    },
+    {
+      "product": "66f4234abcd5678ef9012345",
+      "quantity": 1,
+      "price": 300000
+    }
+  ],
+  "payment_method": "momo",
+  "shipping_address": "123 Lý Thường Kiệt, Quận 10",
+  "city": "TP Hồ Chí Minh",
+  "recipient_name": "Nguyễn Văn A",
+  "recipient_phone": "0912345678",
+  "notes": "Giao buổi sáng",
+  "status": "processing"
+}
+
+### 
+DELETE http://localhost:8080/api/v1/orders/68d887a3df037f9f8a66385c
+Content-Type: application/json
+
+
 

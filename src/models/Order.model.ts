@@ -121,22 +121,6 @@ const orderSchema = new Schema<IOrder>(
   }
 );
 
-// Middleware: đảm bảo total_amount = tổng của items
-orderSchema.pre("save", async function (next) {
-  try {
-    if (this.items && this.items.length > 0) {
-      const OrderItemModel = this.model("OrderItem");
-      const items = await OrderItemModel.find({ _id: { $in: this.items } });
-
-      const total = items.reduce((sum, item) => sum + (item as any).total, 0);
-      this.total_amount = total;
-    }
-    next();
-  } catch (err) {
-    next(err instanceof Error ? err : new Error(String(err)));
-  }
-});
-
 const Order = model("Order", orderSchema);
 
 export { Order, OrderItem };
