@@ -10,8 +10,8 @@ const findAll = async () => {
         model: "Product",
       },
     })
-    .populate("customer")
-    .populate("staff");
+    .populate("customer, fullName")
+    .populate("staff, fullName");
 };
 
 const findById = async (id: string) => {
