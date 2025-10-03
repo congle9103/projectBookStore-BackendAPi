@@ -1,5 +1,6 @@
 import createError from "http-errors";
 import { Order, OrderItem  } from "../models/Order.model";
+import { Customer } from "../models/Customer.model"; // nhớ import model Customer
 
 const findAll = async (filters: {
   status?: string;
@@ -10,8 +11,8 @@ const findAll = async (filters: {
   const query: any = {};
 
   // Lọc theo status
-  if (filters.status) {
-    query.status = filters.status;
+  if (filters.status && filters.status.trim() !== "") {
+    query.status = filters.status.toLowerCase();
   }
 
   // Lọc theo min/max amount
@@ -23,12 +24,16 @@ const findAll = async (filters: {
       query.total_amount.$lte = filters.maxAmount;
   }
 
-  // Lọc theo search (customer.full_name hoặc recipient_name)
+  // Lọc theo search (recipient_name hoặc customer.full_name)
   if (filters.search && filters.search.trim() !== "") {
-    const regex = new RegExp(filters.search.trim(), "i"); // không phân biệt hoa/thường
+    const regex = new RegExp(filters.search.trim(), "i");
+
+    // Tìm danh sách customer _id có full_name match
+    const customers = await Customer.find({ full_name: regex }).select("_id");
+
     query.$or = [
       { recipient_name: regex },
-      { "customer.full_name": regex }, // cần $lookup hoặc populate mới hoạt động
+      { customer: { $in: customers.map((c) => c._id) } },
     ];
   }
 
