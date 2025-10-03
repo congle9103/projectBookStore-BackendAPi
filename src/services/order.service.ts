@@ -1,17 +1,35 @@
 import createError from "http-errors";
 import { Order, OrderItem  } from "../models/Order.model";
 
-const findAll = async () => {
-  return await Order.find()
+const findAll = async (filters: {
+  status?: string;
+  minAmount?: number;
+  maxAmount?: number;
+}) => {
+  const query: any = {};
+
+  if (filters.status) {
+    query.status = filters.status;
+  }
+
+  if (filters.minAmount !== undefined || filters.maxAmount !== undefined) {
+    query.total_amount = {};
+    if (filters.minAmount !== undefined) query.total_amount.$gte = filters.minAmount;
+    if (filters.maxAmount !== undefined) query.total_amount.$lte = filters.maxAmount;
+  }
+
+  return await Order.find(query)
     .populate({
       path: "items",
       populate: {
-        path: "product", // vì trong OrderItem có ref tới Product
+        path: "product",
         model: "Product",
+        select: "product_name price",
       },
     })
-    .populate("customer, full_name")
-    .populate("staff, full_name");
+    .populate("customer", "full_name")
+    .populate("staff", "full_name")
+    .sort({ createdAt: -1 });
 };
 
 const findById = async (id: string) => {

@@ -4,7 +4,15 @@ import { sendJsonSuccess } from "../helpers/response.helper";
 
 const findAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const orders = await orderService.findAll();
+    const { status, minAmount, maxAmount } = req.query;
+
+    const filters = {
+      status: status as string | undefined,
+      minAmount: minAmount ? Number(minAmount) : undefined,
+      maxAmount: maxAmount ? Number(maxAmount) : undefined,
+    };
+
+    const orders = await orderService.findAll(filters);
     sendJsonSuccess(res, orders);
   } catch (error) {
     next(error);
