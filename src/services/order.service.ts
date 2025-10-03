@@ -5,17 +5,31 @@ const findAll = async (filters: {
   status?: string;
   minAmount?: number;
   maxAmount?: number;
+  search?: string;
 }) => {
   const query: any = {};
 
+  // Lọc theo status
   if (filters.status) {
     query.status = filters.status;
   }
 
+  // Lọc theo min/max amount
   if (filters.minAmount !== undefined || filters.maxAmount !== undefined) {
     query.total_amount = {};
-    if (filters.minAmount !== undefined) query.total_amount.$gte = filters.minAmount;
-    if (filters.maxAmount !== undefined) query.total_amount.$lte = filters.maxAmount;
+    if (filters.minAmount !== undefined)
+      query.total_amount.$gte = filters.minAmount;
+    if (filters.maxAmount !== undefined)
+      query.total_amount.$lte = filters.maxAmount;
+  }
+
+  // Lọc theo search (customer.full_name hoặc recipient_name)
+  if (filters.search && filters.search.trim() !== "") {
+    const regex = new RegExp(filters.search.trim(), "i"); // không phân biệt hoa/thường
+    query.$or = [
+      { recipient_name: regex },
+      { "customer.full_name": regex }, // cần $lookup hoặc populate mới hoạt động
+    ];
   }
 
   return await Order.find(query)
