@@ -104,10 +104,18 @@ const create = async (payload: any) => {
 };
 
 const updateById = async (id: string, payload: any) => {
-  const product = await findById(id);
-  Object.assign(product, payload);
-  await product.save();
-  return product;
+  try {
+    const product = await findById(id);
+    if (!product) throw new Error("Product not found");
+
+    Object.assign(product, payload);
+    await product.save();
+    return product;
+  } catch (err: any) {
+    console.error("❌ Lỗi khi update sản phẩm:", err.message);
+    console.error(err.errors || err);
+    throw err;
+  }
 };
 
 const deleteById = async (id: string) => {
