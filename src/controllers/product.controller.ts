@@ -1,16 +1,53 @@
+import createError from "http-errors";
 import { NextFunction, Request, Response } from "express";
 import productService from "../services/product.service";
 import { sendJsonSuccess } from "../helpers/response.helper";
 
-const findAll = async (req: Request, res: Response, next: NextFunction) => {
+/* ===========================
+   🔹 UPLOAD SINGLE FILE
+   =========================== */
+const uploadSingle = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const products = await productService.findAll();
+    sendJsonSuccess(res, [], "Product uploaded successfully");
+  } catch (error) {
+    next(error);
+  }
+};
+
+/* ===========================
+   🔹 HOME PRODUCTS (Giới hạn theo catId + limit)
+   =========================== */
+const findHomeProducts = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const products = await productService.findHomeProducts({
+      catId: req.params.catId,
+      limit: req.query.limit ? parseInt(req.query.limit as string) : 5,
+    });
     sendJsonSuccess(res, products);
   } catch (error) {
     next(error);
   }
 };
 
+/* ===========================
+   🔹 FIND ALL (có phân trang, lọc tên, giá, thể loại)
+   =========================== */
+const findAll = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const products = await productService.findAll(req.query);
+    sendJsonSuccess(res, products);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/* ===========================
+   🔹 FIND BY ID
+   =========================== */
 const findById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
@@ -19,18 +56,11 @@ const findById = async (req: Request, res: Response, next: NextFunction) => {
   } catch (error) {
     next(error);
   }
-};
+}
 
-const create = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    console.log("📦 req.body:", req.body);
-    const product = await productService.create(req.body);
-    sendJsonSuccess(res, product, "Product created successfully", 201);
-  } catch (error) {
-    next(error);
-  }
-};
-
+/* ===========================
+   🔹 UPDATE BY ID
+   =========================== */
 const updateById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
@@ -41,6 +71,9 @@ const updateById = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+/* ===========================
+   🔹 DELETE BY ID
+   =========================== */
 const deleteById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
@@ -51,10 +84,14 @@ const deleteById = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+/* ===========================
+   🔹 EXPORT CONTROLLER
+   =========================== */
 export default {
   findAll,
   findById,
-  create,
   updateById,
   deleteById,
+  findHomeProducts,
+  uploadSingle,
 };

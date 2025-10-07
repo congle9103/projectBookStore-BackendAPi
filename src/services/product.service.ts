@@ -1,34 +1,107 @@
 import createError from "http-errors";
 import Product from "../models/Product.model";
+import Category from "../models/Category.model";
 
-const findAll = async () => {
-  return await Product.find().populate("category_id");
+/* ===========================
+   🔹 PUBLIC SERVICE FUNCTIONS
+   =========================== */
+
+const findHomeProducts = async ({
+  catId,
+  limit = 5,
+}: {
+  catId: string;
+  limit: number;
+}) => {
+  const products = await Product.find({ category_id: catId })
+    .select("-createdAt -updatedAt -description")
+    .limit(limit)
+    .populate("category_id", "category_name slug")
+    .populate("brand_id", "brand_name");
+  return products;
 };
 
-const findById = async (id: string) => {
-  const product = await Product.findById(id).populate("category_id");
-  if (!product) {
-    throw createError(404, "Product not found");
+/* ===========================
+   🔹 FIND ALL PRODUCTS (Admin page)
+   =========================== */
+const findAll = async (query: any) => {
+  const {
+    page = 1,
+    limit = 5,
+    keyword = null,
+    sort_type = "desc",
+    sort_by = "createdAt",
+    cat_id = null,
+    minPrice = null,
+    maxPrice = null,
+  } = query;
+
+  // SORT
+  const sortObject: Record<string, 1 | -1> = {
+    [sort_by]: sort_type === "desc" ? -1 : 1,
+  };
+
+  // WHERE
+  const where: any = {};
+  if (keyword) where.product_name = { $regex: keyword, $options: "i" };
+  if (cat_id) where.category_id = cat_id;
+  if (minPrice || maxPrice) {
+    where.price = {};
+    if (minPrice) where.price.$gte = Number(minPrice);
+    if (maxPrice) where.price.$lte = Number(maxPrice);
   }
+
+  const skip = (page - 1) * limit;
+  const products = await Product.find(where)
+    .skip(skip)
+    .limit(limit)
+    .sort(sortObject)
+    .populate("category_id", "category_name slug")
+
+  const totalRecords = await Product.countDocuments(where);
+
+  return { products, page, limit, totalRecords };
+};
+
+/* ===========================
+   🔹 CRUD SERVICES
+   =========================== */
+
+const findById = async (id: string) => {
+  const product = await Product.findById(id)
+    .populate("category_id", "category_name")
+    .populate("brand_id", "brand_name");
+  if (!product) throw createError(404, "Product not found");
   return product;
 };
 
 const create = async (payload: any) => {
   const newProduct = new Product({
     product_name: payload.product_name,
-    category_id: payload.category_id,
-    supplier: payload.supplier,
-    publisher: payload.publisher,
-    authors: payload.authors,
-    originalPrice: payload.originalPrice,
-    stock: payload.stock,
     slug: payload.slug,
+    description: payload.description,
+    price: payload.price,
+    originalPrice: payload.originalPrice,
+    discountPercent: payload.discountPercent,
+    stock: payload.stock,
+    model_year: payload.model_year,
+    category_id: payload.category_id,
+    brand_id: payload.brand_id,
+    thumbnails: payload.thumbnails,
+    authors: payload.authors,
+    publisher: payload.publisher,
+    supplier: payload.supplier,
+    publicationYear: payload.publicationYear,
+    language: payload.language,
+    weight: payload.weight,
+    isNew: payload.isNew,
+    isPopular: payload.isPopular,
+    isFlashSale: payload.isFlashSale,
   });
 
   await newProduct.save();
   return newProduct;
 };
-
 
 const updateById = async (id: string, payload: any) => {
   const product = await findById(id);
@@ -43,10 +116,14 @@ const deleteById = async (id: string) => {
   return product;
 };
 
+/* ===========================
+   🔹 EXPORT SERVICE
+   =========================== */
 export default {
   findAll,
   findById,
   create,
-  updateById,
   deleteById,
+  updateById,
+  findHomeProducts,
 };
