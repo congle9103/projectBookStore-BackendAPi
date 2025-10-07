@@ -17,7 +17,6 @@ const findHomeProducts = async ({
     .select("-createdAt -updatedAt -description")
     .limit(limit)
     .populate("category_id", "category_name slug")
-    .populate("brand_id", "brand_name");
   return products;
 };
 
@@ -70,7 +69,6 @@ const findAll = async (query: any) => {
 const findById = async (id: string) => {
   const product = await Product.findById(id)
     .populate("category_id", "category_name")
-    .populate("brand_id", "brand_name");
   if (!product) throw createError(404, "Product not found");
   return product;
 };
