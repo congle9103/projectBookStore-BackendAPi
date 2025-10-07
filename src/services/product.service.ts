@@ -84,7 +84,6 @@ const create = async (payload: any) => {
     stock: payload.stock,
     model_year: payload.model_year,
     category_id: payload.category_id,
-    brand_id: payload.brand_id,
     thumbnails: payload.thumbnails,
     authors: payload.authors,
     publisher: payload.publisher,
