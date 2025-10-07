@@ -1,6 +1,6 @@
 import createError from "http-errors";
 import { Order, OrderItem  } from "../models/Order.model";
-import { Customer } from "../models/Customer.model"; // nhớ import model Customer
+import Customer from "../models/Customer.model";
 
 const findAll = async (filters: {
   status?: string;
@@ -33,7 +33,7 @@ const findAll = async (filters: {
 
     query.$or = [
       { recipient_name: regex },
-      { customer: { $in: customers.map((c) => c._id) } },
+      { customer: { $in: customers.map((c: any) => c._id) } },
     ];
   }
 
