@@ -9,6 +9,9 @@ router.get("/", productController.findAll);
 // GET /api/v1/products/:id
 router.get("/:id", productController.findById);
 
+// POST /api/v1/products
+router.post("/", productController.create);
+
 // PUT /api/v1/products/:id
 router.put("/:id", productController.updateById);
 

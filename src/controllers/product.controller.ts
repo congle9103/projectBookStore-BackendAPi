@@ -71,6 +71,16 @@ const updateById = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+// Create a new product
+const create = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const product = await productService.create(req.body);
+    sendJsonSuccess(res, product, "Product created successfully");
+  } catch (error) {
+    next(error);
+  }
+};
+
 /* ===========================
    🔹 DELETE BY ID
    =========================== */
@@ -91,6 +101,7 @@ export default {
   findAll,
   findById,
   updateById,
+  create,
   deleteById,
   findHomeProducts,
   uploadSingle,

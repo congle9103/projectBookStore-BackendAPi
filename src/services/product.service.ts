@@ -127,7 +127,7 @@ const deleteById = async (id: string) => {
 export default {
   findAll,
   findById,
-  create,
+  create, 
   deleteById,
   updateById,
   findHomeProducts,
