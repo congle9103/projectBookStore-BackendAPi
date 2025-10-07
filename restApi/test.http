@@ -1,6 +1,6 @@
 PRODUCT
 ###
-POST http://localhost:8080/api/v1/products
+POST https://projectbookstore-backendapi.onrender.com/api/v1/products
 Content-Type: application/json
 
 {
@@ -34,10 +34,10 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:8080/api/v1/products/68d3f4261c359bfe9b3450cb
+DELETE http://localhost:8080/api/v1/products/68e517831a8418dfddc1f92b
 Content-Type: application/json
 
-CATEGORY
+# CATEGORY
 ###
 POST http://localhost:8080/api/v1/categories
 Content-Type: application/json  
@@ -62,7 +62,7 @@ Content-Type: application/json
 DELETE  http://localhost:8080/api/v1/categories/68d3f77f1c359bfe9b3450e5
 Content-Type: application/json  
 
-CUSTOMER
+# CUSTOMER
 ### 
 POST http://localhost:8080/api/v1/customers
 Content-Type: application/json
@@ -109,7 +109,7 @@ Content-Type: application/json
 DELETE http://localhost:8080/api/v1/customers/68d51751e9b26734b64e175b
 Content-Type: application/json
 
-STAFF
+# STAFF
 ### 
 POST http://localhost:8080/api/v1/staffs
 Content-Type: application/json
@@ -141,7 +141,7 @@ Content-Type: application/json
 DELETE http://localhost:8080/api/v1/staffs/68d51bed3460873ef438631b
 Content-Type: application/json
 
-ORDER
+# ORDER
 ### 
 POST http://localhost:8080/api/v1/orders
 Content-Type: application/json
