@@ -49,7 +49,7 @@ const productSchema = new Schema<IProduct>(
     format: {
       type: String,
       trim: true,
-      enum: ["Bìa mềm", "Bìa cứng", "Ebook", "Khác"],
+      enum: ["Bìa mềm", "Bìa cứng"],
     },
     dimensions: {
       type: String,

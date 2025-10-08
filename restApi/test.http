@@ -1,11 +1,11 @@
 PRODUCT
 ###
-POST https://projectbookstore-backendapi.onrender.com/api/v1/products
+POST http://localhost:8080/api/v1/products
 Content-Type: application/json
 
 {
   "product_name": "Lược Sử Thời Gian 1",
-  "category_id": "652f0c8f8f8f8f8f8f8f8f8f",
+  "category_id": "68da8fd80466106c9e85b615",
   "supplier": "NXB Trẻ",
   "publisher": "NXB Khoa Học Tự Nhiên",
   "authors": ["Stephen Hawking"],

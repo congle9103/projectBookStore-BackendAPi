@@ -52,6 +52,7 @@ const findAll = async (query: any) => {
 
   const skip = (page - 1) * limit;
   const products = await Product.find(where)
+  .sort({ createdAt: -1 }) // mới nhất lên đầu
     .skip(skip)
     .limit(limit)
     .sort(sortObject)
