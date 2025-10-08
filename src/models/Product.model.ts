@@ -102,10 +102,6 @@ const productSchema = new Schema<IProduct>(
 
     // 👉 Tham chiếu Review (mối quan hệ nhiều-nhiều)
     reviews: [{ type: Schema.Types.ObjectId, ref: "Review" }],
-
-    // Quản trị
-    createdBy: { type: Schema.Types.ObjectId, ref: "Staff" },
-    updatedBy: { type: Schema.Types.ObjectId, ref: "Staff" },
   },
   {
     timestamps: true,
