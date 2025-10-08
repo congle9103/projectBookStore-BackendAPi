@@ -28,7 +28,7 @@ const findAll = async (query: any) => {
     page = 1,
     limit = 5,
     keyword = null,
-    sort_type = "asc",
+    sort_type = "desc",
     sort_by = "createdAt",
     cat_id = null,
     minPrice = null,
@@ -37,7 +37,7 @@ const findAll = async (query: any) => {
 
   // SORT
   const sortObject: Record<string, 1 | -1> = {
-    [sort_by]: sort_type === "asc" ? 1 : -1,
+    [sort_by]: sort_type === "desc" ? -1 : 1,
   };
 
   // WHERE
