@@ -1,11 +1,6 @@
 import mongoose, { Schema, model } from "mongoose";
 import { IProduct } from "../types/product.type";
 
-// 💥 Xóa model cũ an toàn
-if (mongoose.models.Product) {
-  mongoose.deleteModel("Product");
-}
-
 const productSchema = new Schema<IProduct>(
   {
     product_name: {
