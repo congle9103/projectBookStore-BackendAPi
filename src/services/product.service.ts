@@ -29,7 +29,7 @@ const findAll = async (query: any) => {
     limit = 5,
     keyword = null,
     sort_type = "desc",
-    sort_by = "createdAt",
+    sort_by = "updatedAt",
     cat_id = null,
     minPrice = null,
     maxPrice = null,

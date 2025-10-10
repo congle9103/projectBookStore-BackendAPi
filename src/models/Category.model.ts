@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose';
 import { ICategory } from '../types/category.type';
 
 const categorySchema = new Schema<ICategory>({
-  name: {
+  category_name: {
     type: String,
     required: true,
     unique: true,
