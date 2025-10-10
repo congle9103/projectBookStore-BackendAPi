@@ -23,7 +23,7 @@ const findAll = async (query: any) => {
   const categories = await Category.find(where)
     .skip(skip)
     .limit(limit)
-    .sort(sortObject)
+    .sort(sortObject);
 
   const totalRecords = await Category.countDocuments(where);
 
