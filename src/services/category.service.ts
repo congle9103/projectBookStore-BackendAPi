@@ -17,7 +17,7 @@ const findAll = async (query: any) => {
 
   // WHERE
   const where: any = {};
-  if (keyword) where.category_name = { $regex: keyword, $options: "i" };
+  if (keyword) where.name = { $regex: keyword, $options: "i" };
 
   const skip = (page - 1) * limit;
   const categories = await Category.find(where)
