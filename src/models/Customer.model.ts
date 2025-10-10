@@ -64,6 +64,8 @@ const customerSchema = new Schema(
     ],
     feedbacks: [{ type: Schema.Types.ObjectId, ref: "Review" }],
 
+    orders: [{ type: Schema.Types.ObjectId, ref: "Order" }],
+
     is_active: { type: Boolean, default: true },
   },
   { timestamps: true, versionKey: false }
