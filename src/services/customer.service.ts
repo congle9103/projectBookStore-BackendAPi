@@ -1,73 +1,43 @@
 import createError from "http-errors";
 import Customer from "../models/Customer.model";
 
- const findAll = async (query: any) => {
-  try {
-    const {
-      page = 1,
-      limit = 5,
-      keyword = "",
-      sort_type = "desc", // sắp xếp theo tổng tiền
-    } = query;
+const findAll = async (req: Request, res: Response, query: any) => {
+    const { keyword, sort_type = "desc" } = query;
 
-    const skip = (page - 1) * limit;
+    // Điều kiện tìm kiếm theo phone hoặc full_name
+    const where = keyword
+      ? {
+          $or: [
+            { phone: { $regex: keyword, $options: "i" } },
+            { full_name: { $regex: keyword, $options: "i" } },
+          ],
+        }
+      : {};
 
-    // ----- Tìm theo keyword -----
-    const where: any = {};
-    if (keyword) {
-      where.$or = [
-        { username: { $regex: keyword, $options: "i" } },
-        { phone: { $regex: keyword, $options: "i" } },
-      ];
-    }
-
-    // ----- Lấy khách hàng và populate đơn hàng -----
+    // Populate đơn hàng
     const customers = await Customer.find(where)
       .populate({
         path: "orders",
-        select: "total_amount", // chỉ lấy các trường cần
+        model: "Order",
+        select: "total_amount", // chỉ lấy tổng tiền
       })
-      .skip(skip)
-      .limit(Number(limit));
+      .lean(); // trả về object JS thường
 
-    // ----- Tính tổng tiền từng khách hàng -----
-    const result = customers
-      .map((customer) => {
-        const totalSpent = customer.orders?.reduce(
-          (sum, order) => sum + (order.total_amount || 0),
-          0
-        );
-
-        return {
-          _id: customer._id,
-          username: customer.username,
-          full_name: customer.full_name,
-          email: customer.email,
-          totalSpent,
-          orders: customer.orders,
-        };
-      })
-      // chỉ giữ người có đơn hàng
-      .filter((c) => c.totalSpent > 0)
-      // sắp xếp
-      .sort((a, b) =>
-        sort_type === "asc"
-          ? a.totalSpent - b.totalSpent
-          : b.totalSpent - a.totalSpent
+    // Tính tổng chi tiêu
+    const result = customers.map((c) => {
+      const totalSpent = (c.orders || []).reduce(
+        (sum, order: any) => sum + (order.total_amount || 0),
+        0
       );
+      return { ...c, totalSpent };
+    });
 
-    const totalRecords = await Customer.countDocuments(where);
-
-    return {
-      customers: result,
-      page: Number(page),
-      limit: Number(limit),
-      totalRecords,
-    };
-  } catch (error) {
-    console.error("findAll customers error:", error);
-    throw error;
-  }
+    // Sắp xếp theo tổng chi tiêu
+    result.sort((a, b) =>
+      sort_type === "asc"
+        ? a.totalSpent - b.totalSpent
+        : b.totalSpent - a.totalSpent
+    );
 };
 
 const findById = async (id: string) => {
