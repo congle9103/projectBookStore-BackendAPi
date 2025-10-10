@@ -28,17 +28,17 @@ const findAll = async (query: any) => {
     page = 1,
     limit = 5,
     keyword = null,
-    // sort_type = "desc",
-    // sort_by = "updatdAt",
+    sort_type = "desc",
+    sort_by = "createdAt",
     cat_id = null,
     minPrice = null,
     maxPrice = null,
   } = query;
 
   // SORT
-  // const sortObject: Record<string, 1 | -1> = {
-  //   [sort_by]: sort_type === "desc" ? -1 : 1,
-  // };
+  const sortObject: Record<string, 1 | -1> = {
+    [sort_by]: sort_type === "desc" ? -1 : 1,
+  };
 
   // WHERE
   const where: any = {};
@@ -54,7 +54,7 @@ const findAll = async (query: any) => {
   const products = await Product.find(where)
     .skip(skip)
     .limit(limit)
-    // .sort(sortObject)
+    .sort(sortObject)
     .populate("category_id", "category_name slug")
 
   const totalRecords = await Product.countDocuments(where);

@@ -1,8 +1,33 @@
 import createError from "http-errors";
 import Category from "../models/Category.model";
 
-const findAll = async () => {
-  return await Category.find();
+const findAll = async (query: any) => {
+  const {
+    page = 1,
+    limit = 5,
+    keyword = null,
+    sort_type = "desc",
+    sort_by = "createdAt",
+  } = query;
+
+  // SORT
+  const sortObject: Record<string, 1 | -1> = {
+    [sort_by]: sort_type === "desc" ? -1 : 1,
+  };
+
+  // WHERE
+  const where: any = {};
+  if (keyword) where.product_name = { $regex: keyword, $options: "i" };
+
+  const skip = (page - 1) * limit;
+  const categories = await Category.find(where)
+    .skip(skip)
+    .limit(limit)
+    .sort(sortObject)
+
+  const totalRecords = await Category.countDocuments(where);
+
+  return { categories, page, limit, totalRecords };
 };
 
 const findById = async (id: string) => {
