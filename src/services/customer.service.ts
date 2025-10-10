@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import Customer from "../models/Customer.model";
 
-const findAll = async (req: Request, res: Response, query: any) => {
+const findAll = async (query: any) => {
     const { keyword, sort_type = "desc" } = query;
 
     // Điều kiện tìm kiếm theo phone hoặc full_name
