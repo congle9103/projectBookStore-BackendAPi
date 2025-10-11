@@ -5,34 +5,60 @@ const findAll = async (query: any) => {
   const {
     page = 1,
     limit = 5,
-    keyword = null,
+    keyword = "",
+    minSalary = null,
+    maxSalary = null,
     sort_type = "desc",
     sort_by = "updatedAt",
   } = query;
 
-  // SORT
+  // =========================
+  // 📌 WHERE (lọc & tìm kiếm)
+  // =========================
+  const where: any = {};
+
+  if (keyword) {
+    where.$or = [
+      { full_name: { $regex: keyword, $options: "i" } },
+      { username: { $regex: keyword, $options: "i" } },
+      { email: { $regex: keyword, $options: "i" } },
+      { phone: { $regex: keyword, $options: "i" } },
+    ];
+  }
+  if (minSalary || maxSalary) {
+    where.salary = {};
+    if (minSalary) where.salary.$gte = Number(minSalary);
+    if (maxSalary) where.salary.$lte = Number(maxSalary);
+  }
+
+  // =========================
+  // 📌 SORT 
+  // =========================
   const sortObject: Record<string, 1 | -1> = {
     [sort_by]: sort_type === "desc" ? -1 : 1,
   };
 
-  // WHERE
-  const where: any = {};
-  if (keyword) {
-    where.$or = [
-      { username: { $regex: keyword, $options: "i" } },
-      { fullname: { $regex: keyword, $options: "i" } },
-    ];
-  }
+  // =========================
+  // 📌 PAGINATION
+  // =========================
+  const skip = (Number(page) - 1) * Number(limit);
 
-  const skip = (page - 1) * limit;
-  const staff = await Staff.find(where)
+  // =========================
+  // 📌 QUERY
+  // =========================
+  const staffs = await Staff.find(where)
+    .sort(sortObject)
     .skip(skip)
-    .limit(limit)
-    .sort(sortObject);
+    .limit(Number(limit));
 
   const totalRecords = await Staff.countDocuments(where);
 
-  return { staff, page, limit, totalRecords };
+  return {
+    data: staffs,
+    page: Number(page),
+    limit: Number(limit),
+    totalRecords,
+  };
 };
 
 const findById = async (id: string) => {
