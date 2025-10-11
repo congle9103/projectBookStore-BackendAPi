@@ -38,6 +38,7 @@ const findAll = async (query: any) => {
         ? a.totalSpent - b.totalSpent
         : b.totalSpent - a.totalSpent
     );
+    return result;
 };
 
 const findById = async (id: string) => {
