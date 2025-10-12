@@ -1,12 +1,12 @@
 import { Router } from "express";
-import * as supplierController from "../../controllers/supplier.controller";
+import supplierController from "../../controllers/supplier.controller";
 
 const router = Router();
 
-router.get("/", supplierController.getAll);
-router.get("/:id", supplierController.getById);
+router.get("/", supplierController.findAll);
+router.get("/:id", supplierController.findById);
 router.post("/", supplierController.create);
-router.put("/:id", supplierController.update);
-router.delete("/:id", supplierController.remove);
+router.put("/:id", supplierController.updateById);
+router.delete("/:id", supplierController.deleteById);
 
 export default router;
