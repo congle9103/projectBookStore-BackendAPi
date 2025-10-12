@@ -9,6 +9,8 @@ import customersRouter from './routes/v1/customers.route';
 import ordersRouter from './routes/v1/orders.route';
 import reviewsRouter from './routes/v1/reviews.route';
 import staffsRouter from './routes/v1/staffs.route';
+import supplierRoute from "./routes/v1/suppliers.route";
+import publisherRoute from "./routes/v1/publisher.route";
 
 const app = express();
 
@@ -34,6 +36,8 @@ app.use('/api/v1/customers', customersRouter);
 app.use('/api/v1/orders', ordersRouter);
 app.use('/api/v1/reviews', reviewsRouter);
 app.use('/api/v1/staffs', staffsRouter);
+app.use("/api/v1/suppliers", supplierRoute);
+app.use("/api/v1/publishers", publisherRoute);
 
 app.get('/', (req, res) => {
   res.status(200).json({
