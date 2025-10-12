@@ -9,6 +9,15 @@ const supplierSchema = new Schema(
       trim: true,
       maxlength: 255,
     },
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
+      minlength: 3,
+      maxlength: 255,
+    },
     description: {
       type: String,
       maxlength: 1000,
