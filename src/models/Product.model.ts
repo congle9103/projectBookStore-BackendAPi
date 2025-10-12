@@ -40,26 +40,29 @@ const productSchema = new Schema<IProduct>(
     },
 
     // Thông tin sách
-    pages: { type: Number, min: 1, max: 3000 },
+    pages: { required: true, type: Number, min: 50, max: 3000 },
     publicationYear: {
       type: Number,
       min: [1900, "Năm xuất bản quá cũ"],
       max: [new Date().getFullYear(), "Năm xuất bản không vượt hiện tại"],
     },
     format: {
+      required: true,
       type: String,
       trim: true,
       enum: ["Bìa mềm", "Bìa cứng"],
     },
     dimensions: {
+      required: true,
       type: String,
       trim: true,
       match: [/^[0-9]+x[0-9]+x[0-9]+(cm|mm)?$/, "Định dạng: rộngxcaoxdày"],
     },
-    weight: { type: Number, min: 10, max: 5000 },
+    weight: { required: true, type: Number, min: 100, max: 5000 },
 
     // Media
     thumbnails: {
+      required: true,
       type: [String],
       default: [],
       validate: {

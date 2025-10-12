@@ -30,7 +30,6 @@ const findAll = async (query: any) => {
     keyword = null,
     sort_type = "desc",
     sort_by = "updatedAt",
-    cat_id = null,
     minPrice = null,
     maxPrice = null,
   } = query;
@@ -43,7 +42,6 @@ const findAll = async (query: any) => {
   // WHERE
   const where: any = {};
   if (keyword) where.product_name = { $regex: keyword, $options: "i" };
-  if (cat_id) where.category_id = cat_id;
   if (minPrice || maxPrice) {
     where.price = {};
     if (minPrice) where.price.$gte = Number(minPrice);
@@ -55,7 +53,7 @@ const findAll = async (query: any) => {
     .skip(skip)
     .limit(limit)
     .sort(sortObject)
-    .populate("category_id", "category_name slug")
+    .populate("category_id", "name slug")
 
   const totalRecords = await Product.countDocuments(where);
 
