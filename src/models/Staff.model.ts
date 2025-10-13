@@ -44,6 +44,7 @@ const staffSchema = new Schema<IStaff>(
     phone: {
       type: String,
       required: false,
+      unique: true,
       trim: true,
       match: [/^\d{10,15}$/, "Số điện thoại không hợp lệ"],
     },
@@ -54,15 +55,17 @@ const staffSchema = new Schema<IStaff>(
     },
     salary: {
       type: Number,
-      required: false,
+      required: true,
       min: 0,
     },
     hire_date: {
       type: Date,
+      required: true,
       default: Date.now, // Ngày tuyển dụng mặc định là ngày tạo
     },
     is_active: {
       type: Boolean,
+      required: true,
       default: true,
     },
   },

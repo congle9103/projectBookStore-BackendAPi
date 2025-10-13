@@ -18,7 +18,7 @@ const orderItemSchema = new Schema<IOrderItem>(
     price: {
       type: Number,
       required: true,
-      min: [0, "Giá không hợp lệ"],
+      min: [10000, "Giá không hợp lệ"],
     },
     total: {
       type: Number,
@@ -97,18 +97,6 @@ const orderSchema = new Schema<IOrder>(
       enum: {
         values: ["Hà Nội", "TP Hồ Chí Minh", "Đà Nẵng"],
       },
-    },
-    recipient_name: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: [2, "Tên người nhận quá ngắn"],
-      maxlength: [100, "Tên người nhận tối đa 100 ký tự"],
-    },
-    recipient_phone: {
-      type: String,
-      required: true,
-      match: [/^\d{10,15}$/, "Số điện thoại người nhận không hợp lệ"],
     },
     notes: {
       type: String,

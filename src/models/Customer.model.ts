@@ -44,21 +44,23 @@ const customerSchema = new Schema(
     },
     phone: {
       type: String,
+      required: true,
+      unique: true,
       trim: true,
       match: [/^\d{10,15}$/, "Số điện thoại không hợp lệ"],
     },
-    address: { type: String, trim: true, maxLength: 255 },
-    city: { type: String, trim: true, maxLength: 100 },
-    date_of_birth: { type: Date },
-    gender: { type: String, enum: ["male", "female", "other"] },
+    address: { type: String, required: true, trim: true, maxLength: 255 },
+    city: { type: String, required: true, trim: true, maxLength: 100 },
+    date_of_birth: { type: Date, required: true },
+    gender: { type: String, enum: ["male", "female", "other"], required: true },
     point: { type: Number, default: 0, min: 0 },
     vouchers: [
       {
-        code: { type: String, required: true, trim: true }, // Mã voucher
+        code: { type: String, unique: true, required: true, trim: true }, // Mã voucher
         type: { type: String, enum: ["percent", "fixed"], required: true }, // Loại: % hoặc số tiền
         value: { type: Number, required: true, min: 0 }, // Mệnh giá
-        quantity: { type: Number, default: 1, min: 0 }, // Số lượng khách hàng sở hữu
-        expired_at: { type: Date }, // Ngày hết hạn
+        quantity: { type: Number, default: 0, min: 0 }, // Số lượng khách hàng sở hữu
+        expired_at: { type: Date, required: true }, // Ngày hết hạn
         is_active: { type: Boolean, default: true }, // Trạng thái
       },
     ],

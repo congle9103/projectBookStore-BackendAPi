@@ -1,6 +1,7 @@
 import createError from "http-errors";
 import { Order, OrderItem  } from "../models/Order.model";
 import Customer from "../models/Customer.model";
+import Staff from "../models/Staff.model";
 
 const findAll = async (filters: {
   status?: string;
@@ -24,16 +25,17 @@ const findAll = async (filters: {
       query.total_amount.$lte = filters.maxAmount;
   }
 
-  // Lọc theo search (recipient_name hoặc customer.full_name)
+  // Lọc theo search (full_name của customer hoặc full_name của staff)
   if (filters.search && filters.search.trim() !== "") {
     const regex = new RegExp(filters.search.trim(), "i");
 
     // Tìm danh sách customer _id có full_name match
     const customers = await Customer.find({ full_name: regex }).select("_id");
+    const staffs = await Staff.find({ full_name: regex }).select("_id");
 
     query.$or = [
-      { recipient_name: regex },
       { customer: { $in: customers.map((c: any) => c._id) } },
+      { staff: { $in: staffs.map((s: any) => s._id) } },
     ];
   }
 
@@ -46,7 +48,7 @@ const findAll = async (filters: {
         select: "product_name price",
       },
     })
-    .populate("customer", "full_name")
+    .populate("customer", "full_name phone")
     .populate("staff", "full_name")
     .sort({ createdAt: -1 });
 };
