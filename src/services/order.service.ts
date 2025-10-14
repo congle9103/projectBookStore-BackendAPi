@@ -5,8 +5,8 @@ import Staff from "../models/Staff.model";
 
 const findAll = async (filters: {
   status?: string;
-  minAmount?: number;
-  maxAmount?: number;
+  startDate?: string;
+  endDate?: string;
   search?: string;
 }) => {
   const query: any = {};
@@ -16,16 +16,19 @@ const findAll = async (filters: {
     query.status = filters.status.toLowerCase();
   }
 
-  // Lọc theo min/max amount
-  if (filters.minAmount !== undefined || filters.maxAmount !== undefined) {
-    query.total_amount = {};
-    if (filters.minAmount !== undefined)
-      query.total_amount.$gte = filters.minAmount;
-    if (filters.maxAmount !== undefined)
-      query.total_amount.$lte = filters.maxAmount;
+  // Lọc theo khoảng thời gian tạo đơn (createdAt)
+  if (filters.startDate || filters.endDate) {
+    query.createdAt = {};
+    if (filters.startDate) query.createdAt.$gte = new Date(filters.startDate);
+    if (filters.endDate) {
+      // Đảm bảo lấy hết cả ngày cuối cùng
+      const end = new Date(filters.endDate);
+      end.setHours(23, 59, 59, 999);
+      query.createdAt.$lte = end;
+    }
   }
 
-  // Lọc theo search (full_name của customer hoặc full_name của staff)
+  // Lọc theo search (full_name của customer hoặc staff)
   if (filters.search && filters.search.trim() !== "") {
     const regex = new RegExp(filters.search.trim(), "i");
 
