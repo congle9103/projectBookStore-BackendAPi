@@ -3,17 +3,7 @@ import orderService from "../services/order.service";
 import { sendJsonSuccess } from "../helpers/response.helper";
 
 const findAll = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { status, minAmount, maxAmount, startDate, endDate, search } = req.query;
-
-    const filters = {
-      status: status ? String(status) : undefined,
-      startDate: startDate ? String(startDate) : undefined,
-      endDate: endDate ? String(endDate) : undefined,
-      search: search ? String(search) : undefined,
-    };
-
-    const orders = await orderService.findAll(filters);
+  try {const orders = await orderService.findAll(req.query);
     sendJsonSuccess(res, orders);
   } catch (error) {
     next(error);
