@@ -1,5 +1,5 @@
 import createError from "http-errors";
-import { Order, OrderItem  } from "../models/Order.model";
+import { Order, OrderItem } from "../models/Order.model";
 import Customer from "../models/Customer.model";
 import Staff from "../models/Staff.model";
 
@@ -20,12 +20,7 @@ const findAll = async (filters: {
   if (filters.startDate || filters.endDate) {
     query.createdAt = {};
     if (filters.startDate) query.createdAt.$gte = new Date(filters.startDate);
-    if (filters.endDate) {
-      // Đảm bảo lấy hết cả ngày cuối cùng
-      const end = new Date(filters.endDate);
-      end.setHours(23, 59, 59, 999);
-      query.createdAt.$lte = end;
-    }
+    if (filters.endDate) query.createdAt.$lte = new Date(filters.endDate);
   }
 
   // Lọc theo search (full_name của customer hoặc staff)
@@ -58,7 +53,7 @@ const findAll = async (filters: {
 
 const findById = async (id: string) => {
   const order = await Order.findById(id)
-  .populate({
+    .populate({
       path: "items",
       populate: {
         path: "product", // vì trong OrderItem có ref tới Product
@@ -110,7 +105,6 @@ const create = async (payload: any) => {
   return newOrder;
 };
 
-
 const updateById = async (id: string, payload: any) => {
   const order = await findById(id);
 
@@ -142,7 +136,8 @@ const updateById = async (id: string, payload: any) => {
   if (payload.customer) order.customer = payload.customer;
   if (payload.staff) order.staff = payload.staff;
   if (payload.payment_method) order.payment_method = payload.payment_method;
-  if (payload.shipping_address) order.shipping_address = payload.shipping_address;
+  if (payload.shipping_address)
+    order.shipping_address = payload.shipping_address;
   if (payload.city) order.city = payload.city;
   if (payload.recipient_name) order.recipient_name = payload.recipient_name;
   if (payload.recipient_phone) order.recipient_phone = payload.recipient_phone;
