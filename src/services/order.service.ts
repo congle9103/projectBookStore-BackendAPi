@@ -19,15 +19,20 @@ const findAll = async (filters: {
   // Lọc theo khoảng thời gian tạo đơn (createdAt)
   if (filters.startDate || filters.endDate) {
     query.createdAt = {};
-    if (filters.startDate) query.createdAt.$gte = new Date(filters.startDate);
-    if (filters.endDate) query.createdAt.$lte = new Date(filters.endDate);
+    if (filters.startDate) {
+      const gte = new Date(filters.startDate);
+      if (!isNaN(gte.getTime())) query.createdAt.$gte = gte;
+    }
+    if (filters.endDate) {
+      const lte = new Date(filters.endDate);
+      if (!isNaN(lte.getTime())) query.createdAt.$lte = lte;
+    }
   }
 
   // Lọc theo search (full_name của customer hoặc staff)
   if (filters.search && filters.search.trim() !== "") {
     const regex = new RegExp(filters.search.trim(), "i");
 
-    // Tìm danh sách customer _id có full_name match
     const customers = await Customer.find({ full_name: regex }).select("_id");
     const staffs = await Staff.find({ full_name: regex }).select("_id");
 
@@ -36,6 +41,9 @@ const findAll = async (filters: {
       { staff: { $in: staffs.map((s: any) => s._id) } },
     ];
   }
+
+  // debug: print query so you can confirm on server logs
+  console.log("Mongo query for orders:", JSON.stringify(query, null, 2));
 
   return await Order.find(query)
     .populate({
