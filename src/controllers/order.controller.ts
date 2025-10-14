@@ -4,12 +4,13 @@ import { sendJsonSuccess } from "../helpers/response.helper";
 
 const findAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { status, minAmount, maxAmount } = req.query;
+    const { status, minAmount, maxAmount, startDate, endDate, search } = req.query;
 
     const filters = {
-      status: status as string | undefined,
-      minAmount: minAmount ? Number(minAmount) : undefined,
-      maxAmount: maxAmount ? Number(maxAmount) : undefined,
+      status: status ? String(status) : undefined,
+      startDate: startDate ? String(startDate) : undefined,
+      endDate: endDate ? String(endDate) : undefined,
+      search: search ? String(search) : undefined,
     };
 
     const orders = await orderService.findAll(filters);
@@ -18,6 +19,7 @@ const findAll = async (req: Request, res: Response, next: NextFunction) => {
     next(error);
   }
 };
+
 
 const findById = async (req: Request, res: Response, next: NextFunction) => {
   try {
