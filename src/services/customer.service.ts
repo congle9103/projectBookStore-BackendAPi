@@ -2,43 +2,57 @@ import createError from "http-errors";
 import Customer from "../models/Customer.model";
 
 const findAll = async (query: any) => {
-    const { keyword, sort_type = "desc" } = query;
+  const { keyword, sort_type = "desc", city, is_active } = query;
 
-    // Điều kiện tìm kiếm theo phone hoặc full_name
-    const where = keyword
-      ? {
-          $or: [
-            { phone: { $regex: keyword, $options: "i" } },
-            { full_name: { $regex: keyword, $options: "i" } },
-          ],
-        }
-      : {};
+  const where: any = {};
 
-    // Populate đơn hàng
-    const customers = await Customer.find(where)
-      .populate({
-        path: "orders",
-        model: "Order",
-        select: "total_amount", // chỉ lấy tổng tiền
-      })
-      .lean(); // trả về object JS thường
+  // 🔹 Lọc theo keyword (họ tên hoặc số điện thoại)
+  if (keyword) {
+    where.$or = [
+      { phone: { $regex: keyword, $options: "i" } },
+      { full_name: { $regex: keyword, $options: "i" } },
+    ];
+  }
 
-    // Tính tổng chi tiêu
-    const result = customers.map((c) => {
-      const totalSpent = (c.orders || []).reduce(
-        (sum, order: any) => sum + (order.total_amount || 0),
-        0
-      );
-      return { ...c, totalSpent };
-    });
+  // 🔹 Lọc theo thành phố
+  if (city) {
+    where.city = { $regex: city, $options: "i" };
+  }
 
-    // Sắp xếp theo tổng chi tiêu
-    result.sort((a, b) =>
-      sort_type === "asc"
-        ? a.totalSpent - b.totalSpent
-        : b.totalSpent - a.totalSpent
+  // 🔹 Lọc theo trạng thái hoạt động
+  if (is_active !== undefined && is_active !== "") {
+    // vì query param luôn là string => cần ép kiểu
+    if (is_active === "true" || is_active === true) {
+      where.is_active = true;
+    } else if (is_active === "false" || is_active === false) {
+      where.is_active = false;
+    }
+  }
+
+  // 🔹 Truy vấn DB + populate đơn hàng
+  const customers = await Customer.find(where)
+    .populate({
+      path: "orders",
+      model: "Order",
+      select: "total_amount",
+    })
+    .lean();
+
+  // 🔹 Tính tổng chi tiêu
+  const result = customers.map((c) => {
+    const totalSpent = (c.orders || []).reduce(
+      (sum, order: any) => sum + (order.total_amount || 0),
+      0
     );
-    return result;
+    return { ...c, totalSpent };
+  });
+
+  // 🔹 Sắp xếp theo tổng chi tiêu
+  result.sort((a, b) =>
+    sort_type === "asc" ? a.totalSpent - b.totalSpent : b.totalSpent - a.totalSpent
+  );
+
+  return result;
 };
 
 const findById = async (id: string) => {
