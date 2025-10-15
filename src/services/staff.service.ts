@@ -10,11 +10,10 @@ const findAll = async (query: any) => {
     maxSalary = null,
     sort_type = "desc",
     sort_by = "updatedAt",
+    role,
+    is_active,
   } = query;
 
-  // =========================
-  // 📌 WHERE (lọc & tìm kiếm)
-  // =========================
   const where: any = {};
 
   if (keyword) {
@@ -25,31 +24,31 @@ const findAll = async (query: any) => {
       { phone: { $regex: keyword, $options: "i" } },
     ];
   }
+
   if (minSalary || maxSalary) {
     where.salary = {};
     if (minSalary) where.salary.$gte = Number(minSalary);
     if (maxSalary) where.salary.$lte = Number(maxSalary);
   }
 
-  // =========================
-  // 📌 SORT 
-  // =========================
+  if (role) {
+    where.role = role;
+  }
+
+  if (is_active === "true") where.is_active = true;
+  if (is_active === "false") where.is_active = false;
+
   const sortObject: Record<string, 1 | -1> = {
     [sort_by]: sort_type === "desc" ? -1 : 1,
   };
 
-  // =========================
-  // 📌 PAGINATION
-  // =========================
   const skip = (Number(page) - 1) * Number(limit);
 
-  // =========================
-  // 📌 QUERY
-  // =========================
   const staffs = await Staff.find(where)
     .sort(sortObject)
     .skip(skip)
-    .limit(Number(limit));
+    .limit(Number(limit))
+    .lean();
 
   const totalRecords = await Staff.countDocuments(where);
 
