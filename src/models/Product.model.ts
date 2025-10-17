@@ -62,10 +62,6 @@ const productSchema = new Schema<IProduct>(
     thumbnail: {
       type: String,
       required: [true, "Ảnh sản phẩm là bắt buộc"],
-      validate: {
-        validator: (url: string) => /^(http|https):\/\/[^ "]+$/.test(url),
-        message: "Thumbnail phải là URL hợp lệ",
-      },
     },
 
     // Giá & khuyến mãi
