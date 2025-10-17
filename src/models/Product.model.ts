@@ -31,12 +31,10 @@ const productSchema = new Schema<IProduct>(
       maxlength: [255, "Tên nhà xuất bản tối đa 255 ký tự"],
     },
     authors: {
-      type: [String],
+      type: String,
       required: true,
-      validate: {
-        validator: (arr: string[]) => arr.length > 0,
-        message: "Phải có ít nhất một tác giả",
-      },
+      minlength: [2, "Tên tác giả quá ngắn"],
+      maxlength: [255, "Tên tác giả tối đa 255 ký tự"],
     },
 
     // Thông tin sách

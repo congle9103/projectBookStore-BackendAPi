@@ -6,12 +6,11 @@ export interface IProduct {
   category_id: Types.ObjectId;
   supplier: string;
   publisher: string;
-  authors: string[];
+  authors: string;
 
   pages?: number;
   publicationYear?: number;
-  language?: "Tiếng Việt" | "Tiếng Anh" | "Tiếng Nhật" | "Tiếng Hàn" | "Khác";
-  format?: "Bìa mềm" | "Bìa cứng" | "Ebook" | "Khác";
+  format?: "Bìa mềm" | "Bìa cứng";
   dimensions?: string;
   weight?: number;
 

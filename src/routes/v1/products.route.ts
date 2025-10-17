@@ -1,6 +1,5 @@
 import { Router } from "express";
 import productController from "../../controllers/product.controller";
-
 import multer from "multer";
 
 const upload = multer({ dest: "public/uploads/" });
@@ -17,7 +16,7 @@ router.get("/:id", productController.findById);
 router.post("/", upload.single("thumbnail"), productController.create);
 
 // PUT /api/v1/products/:id
-router.put("/:id", upload.single("thumbnail"), productController.updateById);
+router.put("/:id", productController.updateById);
 
 // DELETE /api/v1/products/:id
 router.delete("/:id", productController.deleteById);
