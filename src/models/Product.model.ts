@@ -61,13 +61,11 @@ const productSchema = new Schema<IProduct>(
     weight: { required: true, type: Number, min: 100, max: 5000 },
 
     // Media
-    thumbnails: {
-      required: true,
-      type: [String],
-      default: [],
+    thumbnail: {
+      type: String,
+      required: [true, "Ảnh sản phẩm là bắt buộc"],
       validate: {
-        validator: (arr: string[]) =>
-          arr.every((url) => /^(http|https):\/\/[^ "]+$/.test(url)),
+        validator: (url: string) => /^(http|https):\/\/[^ "]+$/.test(url),
         message: "Thumbnail phải là URL hợp lệ",
       },
     },

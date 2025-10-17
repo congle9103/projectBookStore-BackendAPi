@@ -1,12 +1,5 @@
 import { Types } from "mongoose";
 
-export interface ICrossSaleOption {
-  name: string;
-  price: number;
-  description?: string;
-  isActive?: boolean;
-}
-
 export interface IProduct {
   _id?: Types.ObjectId;
   product_name: string;
@@ -22,7 +15,7 @@ export interface IProduct {
   dimensions?: string;
   weight?: number;
 
-  thumbnails?: string[];
+  thumbnail?: string;
 
   originalPrice: number;
   discountPercent?: number;
@@ -46,9 +39,6 @@ export interface IProduct {
   ratingsQuantity?: number;
 
   reviews?: Types.ObjectId[];
-
-  createdBy?: Types.ObjectId;
-  updatedBy?: Types.ObjectId;
 
   createdAt?: Date;
   updatedAt?: Date;
