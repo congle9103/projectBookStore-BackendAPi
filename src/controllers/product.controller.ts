@@ -70,7 +70,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
     const productData = {
       ...req.body,
       thumbnail: thumbnailPath,
-      authors: JSON.parse(req.body.authors || "[]"), // vì gửi lên dạng chuỗi JSON
+      authors: String(req.body.authors),
       originalPrice: Number(req.body.originalPrice),
       discountPercent: Number(req.body.discountPercent),
       pages: Number(req.body.pages),
