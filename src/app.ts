@@ -27,7 +27,7 @@ app.use(cors({
 }));
 
 //Cấu hình thư mục tĩnh
-app.use(express.static(path.join(__dirname, '../public')));
+app.use("/uploads", express.static("public/uploads"));
 
 app.use('/api/v1/products', productsRouter);
 app.use('/api/v1/categories', categoriesRouter);

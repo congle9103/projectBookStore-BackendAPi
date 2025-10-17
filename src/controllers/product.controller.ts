@@ -3,18 +3,6 @@ import { NextFunction, Request, Response } from "express";
 import productService from "../services/product.service";
 import { sendJsonSuccess } from "../helpers/response.helper";
 
-
-/* ===========================
-   🔹 UPLOAD SINGLE FILE
-   =========================== */
-const uploadSingle = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    sendJsonSuccess(res, [], "Product uploaded successfully");
-  } catch (error) {
-    next(error);
-  }
-};
-
 /* ===========================
    🔹 HOME PRODUCTS (Giới hạn theo catId + limit)
    =========================== */
@@ -75,7 +63,17 @@ const updateById = async (req: Request, res: Response, next: NextFunction) => {
 // Create a new product
 const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const product = await productService.create(req.body);
+    // ✅ Lấy đường dẫn file upload
+    const filePath = req.file ? `uploads/${req.file.filename}` : null;
+
+    // ✅ Trộn dữ liệu sản phẩm và thumbnail
+    const productData = {
+      ...req.body,
+      thumbnail: filePath, // Lưu đường dẫn file
+    };
+
+    const product = await productService.create(productData);
+
     sendJsonSuccess(res, product, "Product created successfully");
   } catch (error) {
     next(error);
@@ -105,5 +103,4 @@ export default {
   create,
   deleteById,
   findHomeProducts,
-  uploadSingle,
 };
