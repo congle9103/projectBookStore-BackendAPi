@@ -63,19 +63,28 @@ const updateById = async (req: Request, res: Response, next: NextFunction) => {
 // Create a new product
 const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // ✅ Lấy đường dẫn file upload
-    const filePath = req.file ? `uploads/${req.file.filename}` : null;
+    // ✅ Nếu có file upload thì thêm đường dẫn vào body
+    const thumbnailPath = req.file ? `uploads/${req.file.filename}` : null;
 
-    // ✅ Trộn dữ liệu sản phẩm và thumbnail
+    // ✅ Gộp dữ liệu từ body và file vào 1 object
     const productData = {
       ...req.body,
-      thumbnail: filePath, // Lưu đường dẫn file
+      thumbnail: thumbnailPath,
+      authors: JSON.parse(req.body.authors || "[]"), // vì gửi lên dạng chuỗi JSON
+      originalPrice: Number(req.body.originalPrice),
+      discountPercent: Number(req.body.discountPercent),
+      pages: Number(req.body.pages),
+      weight: Number(req.body.weight),
+      stock: Number(req.body.stock),
+      publicationYear: Number(req.body.publicationYear),
     };
 
+    // ✅ Gọi service
     const product = await productService.create(productData);
 
     sendJsonSuccess(res, product, "Product created successfully");
   } catch (error) {
+    console.error("❌ Lỗi khi tạo sản phẩm:", error);
     next(error);
   }
 };
