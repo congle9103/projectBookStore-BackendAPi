@@ -64,7 +64,7 @@ const updateById = async (req: Request, res: Response, next: NextFunction) => {
 // Create a new product
 const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    console.log("🚀 req.body:", req.body);
+    console.log("🚀 req.body:", req.file);
     // ✅ Nếu có file upload thì thêm đường dẫn vào body
     const thumbnailPath = req.file ? `uploads/${req.file.filename}` : null;
 
