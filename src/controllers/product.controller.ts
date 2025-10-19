@@ -2,6 +2,7 @@ import createError from "http-errors";
 import { NextFunction, Request, Response } from "express";
 import productService from "../services/product.service";
 import { sendJsonSuccess } from "../helpers/response.helper";
+import { log } from "console";
 
 /* ===========================
    🔹 HOME PRODUCTS (Giới hạn theo catId + limit)
@@ -63,6 +64,7 @@ const updateById = async (req: Request, res: Response, next: NextFunction) => {
 // Create a new product
 const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    console.log("🚀 req.body:", req.body);
     // ✅ Nếu có file upload thì thêm đường dẫn vào body
     const thumbnailPath = req.file ? `uploads/${req.file.filename}` : null;
 
