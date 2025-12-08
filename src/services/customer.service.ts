@@ -1,6 +1,46 @@
 import createError from "http-errors";
 import Customer from "../models/Customer.model";
 
+// Get one customer by client
+const findOnebyClient = async (username: string) => {
+  const customer = await Customer.findOne({ username });
+  if (!customer) {
+    throw createError(404, "Customer not found");
+  }
+  return customer;
+};
+
+// Create customer side client
+const createByClient = async (payload: any) => {
+  const newCustomer = new Customer({
+    username: payload.username,
+    password: payload.password,
+  }); 
+  await newCustomer.save();
+  return newCustomer;
+};
+
+// Put customer side client
+const updateByClient = async (username: string, payload: { password: string }) => {
+  const customer = await Customer.findOne({ username });
+  if (!customer) throw new Error("User not found");
+
+  customer.password = payload.password; 
+  await customer.save();
+  return customer;
+};
+
+// Put customer add-order side client
+const addOrderByClient = async (username: string, orderId: string) => {
+  const customer = await Customer.findOne({ username });
+  if (!customer) throw new Error("User not found");
+
+  customer.orders.push(orderId);
+  await customer.save();
+  return customer;
+};
+
+// Find all customers
 const findAll = async (query: any) => {
   const { keyword, sort_type = "desc", city, is_active } = query;
 
@@ -9,8 +49,10 @@ const findAll = async (query: any) => {
   // 🔹 Lọc theo keyword (họ tên hoặc số điện thoại)
   if (keyword) {
     where.$or = [
-      { phone: { $regex: keyword, $options: "i" } },
+      { username: { $regex: keyword, $options: "i" } },
       { full_name: { $regex: keyword, $options: "i" } },
+      { email: { $regex: keyword, $options: "i" } },
+      { phone: { $regex: keyword, $options: "i" } },
     ];
   }
 
@@ -69,6 +111,11 @@ const create = async (payload: any) => {
     password: payload.password,
     full_name: payload.full_name,
     email: payload.email,
+    phone: payload.phone,
+    address: payload.address,
+    city: payload.city,
+    date_of_birth: payload.date_of_birth,
+    gender: payload.gender
   });
 
   await newCustomer.save();
@@ -76,13 +123,12 @@ const create = async (payload: any) => {
 };
 
 const updateById = async (id: string, payload: any) => {
-  const updatedCustomer = await Customer.findByIdAndUpdate(
-    id,
-    { $set: payload },
-    { new: true, runValidators: true }
-  );
-  return updatedCustomer;
+  const customer = await findById(id);
+  Object.assign(customer, payload);
+  await customer.save();
+  return customer;
 };
+
 
 const deleteById = async (id: string) => {
   const customer = await findById(id);
@@ -96,4 +142,8 @@ export default {
   create,
   updateById,
   deleteById,
+  createByClient,
+  updateByClient,
+  findOnebyClient,  
+  addOrderByClient,
 };

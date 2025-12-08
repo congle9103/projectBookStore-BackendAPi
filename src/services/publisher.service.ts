@@ -1,6 +1,11 @@
 import createError from "http-errors";
 import Publisher from "../models/Publisher.model";
 
+const findAllClient = async () => {
+  const publishers = await Publisher.find();
+  return publishers;
+}
+
 const findAll = async (query: any) => {
   const {
     page = 1,
@@ -65,4 +70,5 @@ export default {
   create,
   updateById,
   deleteById,
+  findAllClient,
 };

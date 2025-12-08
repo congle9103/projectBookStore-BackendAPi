@@ -3,6 +3,12 @@ import orderController from "../../controllers/order.controller";
 
 const router = Router();
 
+// Create order by client
+router.post("/client", orderController.createByClient);
+
+// Find one order side client
+router.get("/customer/:customerId", orderController.findAllByClient);
+
 // GET /api/v1/orders
 router.get("/", orderController.findAll);
 

@@ -1,14 +1,15 @@
 import app from './app';
 import mongoose from 'mongoose'
+import './cron/orderStatusCron';
 
 // Kết nối đến MongoDB
 mongoose
-.connect('mongodb+srv://learnit91031_db_user:RZz4Ez6j9r1vnrK0@bookstore-backendapi.9mon2u8.mongodb.net/?retryWrites=true&w=majority&appName=bookStore-backendApi')
+.connect(process.env.MONGODB_URI_DEPLOY as string)
 .then(() => {
   console.log('Connected to MongoDB successfully');
   // Khởi động server
-  app.listen(8080, () => {
-    console.log(`Server is running on http://localhost:8080`);
+  app.listen(process.env.PORT as string, () => {
+    console.log(`Server is running on http://localhost:${process.env.PORT}`);
   });
 })
 .catch((error) => {

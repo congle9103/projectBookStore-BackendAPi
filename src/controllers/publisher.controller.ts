@@ -2,6 +2,15 @@ import { NextFunction, Request, Response } from "express";
 import publisherService from "../services/publisher.service";
 import { sendJsonSuccess } from "../helpers/response.helper";
 
+const findAllClient = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const publishers = await publisherService.findAllClient();
+    sendJsonSuccess(res, publishers);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const findAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const publishers = await publisherService.findAll(req.query);
@@ -56,4 +65,5 @@ export default {
   create,
   updateById,
   deleteById,
+  findAllClient,
 };

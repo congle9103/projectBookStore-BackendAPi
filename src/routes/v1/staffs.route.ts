@@ -1,21 +1,23 @@
 import { Router } from "express";
 import staffController from "../../controllers/staff.controller";
+import { verifyToken } from "../../middlewares/verifyToken.middleware";
+import { authorizeRole } from "../../middlewares/authorizeRole.middleware";
 
 const router = Router();
 
-// GET /api/v1/staffs
-router.get("/", staffController.findAll);
+// 🔒 Chỉ admin và product manager mới được xem toàn bộ nhân viên
+router.get("/", verifyToken, authorizeRole("admin", "product manager"), staffController.findAll);
 
-// GET /api/v1/staffs/:id
-router.get("/:id", staffController.findById);
+// 🔒 Admin và product manager đều có thể xem chi tiết
+router.get("/:id", verifyToken, authorizeRole("admin", "product manager"), staffController.findById);
+    
+// 🔒 Chỉ admin và product manager mới được thêm
+router.post("/", verifyToken, authorizeRole("admin", "product manager"), staffController.create);
 
-// POST /api/v1/staffs
-router.post("/", staffController.create);
+// 🔒 Chỉ admin và product manager mới được sửa nhân viên
+router.put("/:id", verifyToken, authorizeRole("admin", "product manager"), staffController.updateById);
 
-// PUT /api/v1/staffs/:id
-router.put("/:id", staffController.updateById);
-
-// DELETE /api/v1/staffs/:id
-router.delete("/:id", staffController.deleteById);
+// 🔒 Chỉ admin và product manager mới được xoá nhân viên
+router.delete("/:id", verifyToken, authorizeRole("admin", "product manager"), staffController.deleteById);
 
 export default router;

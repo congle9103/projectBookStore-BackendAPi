@@ -11,20 +11,22 @@ const productSchema = new Schema<IProduct>(
       minlength: [2, "Tên sản phẩm quá ngắn"],
       maxlength: [255, "Tên sản phẩm tối đa 255 ký tự"],
     },
-    category_id: {
+    category: {
       type: Schema.Types.ObjectId,
       ref: "Category",
       required: true,
     },
     supplier: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "Supplier",
       required: true,
       trim: true,
       minlength: [2, "Tên nhà cung cấp quá ngắn"],
       maxlength: [255, "Tên nhà cung cấp tối đa 255 ký tự"],
     },
     publisher: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "Publisher",
       required: true,
       trim: true,
       minlength: [2, "Tên nhà xuất bản quá ngắn"],

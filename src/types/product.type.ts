@@ -3,9 +3,9 @@ import { Types } from "mongoose";
 export interface IProduct {
   _id?: Types.ObjectId;
   product_name: string;
-  category_id: Types.ObjectId;
-  supplier: string;
-  publisher: string;
+  category: Types.ObjectId;
+  supplier: Types.ObjectId;
+  publisher: Types.ObjectId;
   authors: string;
 
   pages?: number;

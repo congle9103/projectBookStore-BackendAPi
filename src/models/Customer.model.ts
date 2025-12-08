@@ -1,5 +1,8 @@
 import { Schema, model } from "mongoose";
-import { hashPassword, comparePassword } from "../middlewares/hashPassword";
+import {
+  hashPassword,
+  comparePassword,
+} from "../middlewares/hashPassword.middleware";
 
 const customerSchema = new Schema(
   {
@@ -18,49 +21,71 @@ const customerSchema = new Schema(
     },
     password: {
       type: String,
-      required: true,
       minLength: 8,
-      match: [
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-        "Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt",
-      ],
+      validate: {
+        validator: function (v: string) {
+          // Chỉ validate nếu đang tạo mới hoặc đang thay đổi mật khẩu
+          if (this.isNew || this.isModified("password")) {
+            return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
+              v
+            );
+          }
+          return true;
+        },
+        message:
+          "Mật khẩu phải có ít nhất 8 ký tự, chứa chữ hoa, thường, số và ký tự đặc biệt",
+      },
     },
 
     full_name: {
       type: String,
-      required: true,
       trim: true,
       minLength: 3,
       maxLength: 100,
+      default: "Khách hàng",
     },
-    avatar: { type: String, trim: true },
     email: {
       type: String,
-      required: true,
       unique: true,
+      sparse: true,
       trim: true,
       lowercase: true,
-      match: [/^\S+@\S+\.\S+$/, "Email không hợp lệ"],
+      validate: {
+        validator: function (v: string) {
+          return (
+            !v ||
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+              v
+            )
+          );
+        },
+        message: "Email không hợp lệ",
+      },
     },
     phone: {
       type: String,
-      required: true,
       unique: true,
+      sparse: true,
       trim: true,
       match: [/^\d{10,15}$/, "Số điện thoại không hợp lệ"],
+      default: "",
     },
-    address: { type: String, required: true, trim: true, maxLength: 255 },
-    city: { type: String, required: true, trim: true, maxLength: 100 },
-    date_of_birth: { type: Date, required: true },
-    gender: { type: String, enum: ["male", "female", "other"], required: true },
+    address: { type: String, trim: true, maxLength: 255, default: "" },
+    city: { type: String, trim: true, maxLength: 100, default: "" },
+    date_of_birth: { type: Date, default: null },
+    gender: {
+      type: String,
+      enum: ["male", "female", "other"],
+      default: "other",
+    },
     point: { type: Number, default: 0, min: 0 },
     vouchers: [
       {
-        code: { type: String, unique: true, required: true, trim: true }, // Mã voucher
-        type: { type: String, enum: ["percent", "fixed"], required: true }, // Loại: % hoặc số tiền
-        value: { type: Number, required: true, min: 0 }, // Mệnh giá
+        code: { type: String, trim: true }, // Mã voucher
+        type: { type: String, enum: ["percent", "fixed"] }, // Loại: % hoặc số tiền
+        value: { type: Number, min: 0 }, // Mệnh giá
         quantity: { type: Number, default: 0, min: 0 }, // Số lượng khách hàng sở hữu
-        expired_at: { type: Date, required: true }, // Ngày hết hạn
+        expired_at: { type: Date }, // Ngày hết hạn
         is_active: { type: Boolean, default: true }, // Trạng thái
       },
     ],

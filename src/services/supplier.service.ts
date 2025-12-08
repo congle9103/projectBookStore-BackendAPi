@@ -1,6 +1,11 @@
 import createError from "http-errors";
 import Supplier from "../models/Supplier.model";
 
+const findAllClient = async () => {
+  const suppliers = await Supplier.find();
+  return suppliers;
+};
+
 const findAll = async (query: any) => {
   const {
     page = 1,
@@ -65,4 +70,5 @@ export default {
   create,
   updateById,
   deleteById,
+  findAllClient,
 };

@@ -9,7 +9,7 @@ const findAll = async (query: any) => {
     minSalary = null,
     maxSalary = null,
     sort_type = "desc",
-    sort_by = "updatedAt",
+    sort_by = "createdAt",
     role,
     is_active,
   } = query;
@@ -18,8 +18,8 @@ const findAll = async (query: any) => {
 
   if (keyword) {
     where.$or = [
-      { full_name: { $regex: keyword, $options: "i" } },
       { username: { $regex: keyword, $options: "i" } },
+      { full_name: { $regex: keyword, $options: "i" } },
       { email: { $regex: keyword, $options: "i" } },
       { phone: { $regex: keyword, $options: "i" } },
     ];
@@ -33,6 +33,13 @@ const findAll = async (query: any) => {
 
   if (role) {
     where.role = role;
+  }
+
+  // lọc theo ngày tuyển dụng
+  if (query.hire_date_from || query.hire_date_to) {
+    where.hire_date = {};
+    if (query.hire_date_from) where.hire_date.$gte = new Date(query.hire_date_from);
+    if (query.hire_date_to) where.hire_date.$lte = new Date(query.hire_date_to);
   }
 
   if (is_active === "true") where.is_active = true;
@@ -73,7 +80,12 @@ const create = async (payload: any) => {
     username: payload.username,
     password: payload.password,
     full_name: payload.full_name,
-    email: payload.email
+    email: payload.email,
+    salary: payload.salary,
+    phone: payload.phone,
+    role: payload.role,
+    hire_date: payload.hire_date,
+    is_active: payload.is_active,
   });
 
   await newStaff.save();

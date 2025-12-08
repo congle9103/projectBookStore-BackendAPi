@@ -2,6 +2,8 @@ import express, {Request, Response, NextFunction} from 'express';
 import createError from "http-errors";
 import path from 'path';
 import cors from 'cors';
+import dotenv from "dotenv";
+dotenv.config();
 import productsRouter from './routes/v1/products.route';
 import categoriesRouter from './routes/v1/categories.route';
 import vouchersController from './routes/v1/vouchers.route';    
@@ -11,6 +13,7 @@ import reviewsRouter from './routes/v1/reviews.route';
 import staffsRouter from './routes/v1/staffs.route';
 import supplierRoute from "./routes/v1/suppliers.route";
 import publisherRoute from "./routes/v1/publisher.route";
+import authRoutes from "./routes/v1/auth.route";
 
 const app = express();
 
@@ -21,6 +24,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors({
   origin: [
     "http://localhost:5173",
+    "http://localhost:3000",
     // "https://project-book-store-ui-admin.vercel.app/dashboard"
   ],
   credentials: true
@@ -28,6 +32,9 @@ app.use(cors({
 
 //Cấu hình thư mục tĩnh
 app.use("/uploads", express.static("public/uploads"));
+
+// ✅ Cho phép truy cập ảnh trong thư mục public/uploads
+app.use("/uploads", express.static(path.join(__dirname, "../public/uploads")));
 
 app.use('/api/v1/products', productsRouter);
 app.use('/api/v1/categories', categoriesRouter);
@@ -38,6 +45,7 @@ app.use('/api/v1/reviews', reviewsRouter);
 app.use('/api/v1/staffs', staffsRouter);
 app.use("/api/v1/suppliers", supplierRoute);
 app.use("/api/v1/publishers", publisherRoute);
+app.use("/api/v1/auth", authRoutes);
 
 app.get('/', (req, res) => {
   res.status(200).json({

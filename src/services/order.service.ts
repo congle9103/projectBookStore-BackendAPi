@@ -3,13 +3,76 @@ import { Order, OrderItem } from "../models/Order.model";
 import Customer from "../models/Customer.model";
 import Staff from "../models/Staff.model";
 
+// Create order by client
+const createByClient = async (payload: any) => {
+  // 1. Tạo và lưu OrderItem riêng lẻ
+  const orderItems = await Promise.all(
+    payload.items.map(async (i: any) => {
+      const total = i.price * i.quantity;
+      const newItem = new OrderItem({
+        product: i.product,
+        quantity: i.quantity,
+        price: i.price,
+        total,
+      });
+      return await newItem.save(); // lưu trực tiếp vào collection OrderItem
+    })
+  );
+
+  // 2. Tính tổng tiền
+  const total_amount = orderItems.reduce((sum, item) => sum + item.total, 0);
+
+  // 3. Tạo Order với danh sách ObjectId của OrderItem
+  const newOrder = new Order({
+    customer: payload.customer,
+    items: orderItems.map((i) => i._id), // chỉ lấy _id, không populate
+    payment_method: payload.payment_method,
+    shipping_address: payload.shipping_address,
+    city: payload.city,
+    notes: payload.notes,
+    status: payload.status,
+    total_amount,
+  });
+
+  // 4. Lưu Order
+  await newOrder.save();
+
+  return newOrder;
+};
+
+// Find one order side client
+const findAllByClient = async (customerId: string) => {
+  const order = await Order.find({ customer: customerId })
+    .populate({
+      path: "items",
+      populate: {
+        path: "product",
+        model: "Product",
+        select: "product_name thumbnail",
+      },
+    })
+    .populate("customer", "full_name phone price address city");
+
+  if (!order) {
+    throw createError(404, "Order not found for this customer");
+  }
+
+  return order;
+};
+
 const findAll = async (filters: {
   status?: string;
   startDate?: string;
   endDate?: string;
   search?: string;
+  payment_method?: string;
 }) => {
   const query: any = {};
+
+  // Lọc theo phương thức thanh toán
+  if (filters.payment_method && filters.payment_method.trim() !== "") {
+    query.payment_method = filters.payment_method;
+  }
 
   // Lọc theo status
   if (filters.status && filters.status.trim() !== "") {
@@ -29,21 +92,20 @@ const findAll = async (filters: {
     }
   }
 
-  // Lọc theo search (full_name của customer hoặc staff)
+  // Lọc theo search (full_name hoặc phone của customer)
   if (filters.search && filters.search.trim() !== "") {
     const regex = new RegExp(filters.search.trim(), "i");
 
     const customers = await Customer.find({ full_name: regex }).select("_id");
-    const staffs = await Staff.find({ full_name: regex }).select("_id");
+    const customersByPhone = await Customer.find({ phone: regex }).select(
+      "_id"
+    );
 
     query.$or = [
       { customer: { $in: customers.map((c: any) => c._id) } },
-      { staff: { $in: staffs.map((s: any) => s._id) } },
+      { customer: { $in: customersByPhone.map((c: any) => c._id) } },
     ];
   }
-
-  // debug: print query so you can confirm on server logs
-  console.log("Mongo query for orders:", JSON.stringify(query, null, 2));
 
   return await Order.find(query)
     .populate({
@@ -51,11 +113,10 @@ const findAll = async (filters: {
       populate: {
         path: "product",
         model: "Product",
-        select: "product_name price",
+        select: "product_name",
       },
     })
-    .populate("customer", "full_name phone")
-    .populate("staff", "full_name")
+    .populate("customer", "full_name phone price address city")
     .sort({ createdAt: -1 });
 };
 
@@ -69,7 +130,6 @@ const findById = async (id: string) => {
       },
     })
     .populate("customer")
-    .populate("staff");
   if (!order) {
     throw createError(404, "Order not found");
   }
@@ -96,13 +156,10 @@ const create = async (payload: any) => {
   // 2. Tạo Order, items là danh sách _id của OrderItem
   const newOrder = new Order({
     customer: payload.customer,
-    staff: payload.staff,
     items: orderItems.map((i) => i._id),
     payment_method: payload.payment_method,
     shipping_address: payload.shipping_address,
     city: payload.city,
-    recipient_name: payload.recipient_name,
-    recipient_phone: payload.recipient_phone,
     notes: payload.notes,
     status: payload.status,
     total_amount,
@@ -142,13 +199,7 @@ const updateById = async (id: string, payload: any) => {
 
   // Các field còn lại
   if (payload.customer) order.customer = payload.customer;
-  if (payload.staff) order.staff = payload.staff;
   if (payload.payment_method) order.payment_method = payload.payment_method;
-  if (payload.shipping_address)
-    order.shipping_address = payload.shipping_address;
-  if (payload.city) order.city = payload.city;
-  if (payload.recipient_name) order.recipient_name = payload.recipient_name;
-  if (payload.recipient_phone) order.recipient_phone = payload.recipient_phone;
   if (payload.notes !== undefined) order.notes = payload.notes;
   if (payload.status) order.status = payload.status;
 
@@ -173,4 +224,6 @@ export default {
   create,
   updateById,
   deleteById,
+  createByClient,
+  findAllByClient,
 };

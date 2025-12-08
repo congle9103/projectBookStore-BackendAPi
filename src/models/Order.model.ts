@@ -42,11 +42,6 @@ const orderSchema = new Schema<IOrder>(
       ref: "Customer",
       required: [true, "Khách hàng là bắt buộc"],
     },
-    staff: {
-      type: Schema.Types.ObjectId,
-      ref: "Staff", // nhân viên xử lý đơn
-      required: true,
-    },
     items: {
       type: [
         {
@@ -68,35 +63,21 @@ const orderSchema = new Schema<IOrder>(
     payment_method: {
       type: String,
       enum: [
-        "cash_on_delivery",
-        "zalopay",
-        "vnpay",
-        "shopeepay",
-        "momo",
-        "atm",
-        "visa",
+        "Ví ZaloPay",
+        "VNPAY",
+        "Ví ShopeePay",
+        "Ví Momo",
+        "ATM",
+        "Visa",
+        "Thanh toán bằng tiền mặt khi nhận hàng",
       ],
+
       required: [true, "Phương thức thanh toán là bắt buộc"],
     },
     total_amount: {
       type: Number,
       required: true,
       min: [0, "Tổng tiền đơn hàng không hợp lệ"],
-    },
-    shipping_address: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: [10, "Địa chỉ giao hàng quá ngắn"],
-      maxlength: [255, "Địa chỉ giao hàng quá dài"],
-    },
-    city: {
-      type: String,
-      required: true,
-      trim: true,
-      enum: {
-        values: ["Hà Nội", "TP Hồ Chí Minh", "Đà Nẵng"],
-      },
     },
     notes: {
       type: String,

@@ -2,6 +2,15 @@ import { NextFunction, Request, Response } from "express";
 import supplierService from "../services/supplier.service";
 import { sendJsonSuccess } from "../helpers/response.helper";
 
+const findAllClient = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const suppliers = await supplierService.findAllClient();
+    sendJsonSuccess(res, suppliers);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const findAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const suppliers = await supplierService.findAll(req.query);
@@ -56,4 +65,5 @@ export default {
   create,
   updateById,
   deleteById,
+  findAllClient,
 };

@@ -30,6 +30,11 @@ const findAll = async (query: any) => {
   return { categories, page, limit, totalRecords };
 };
 
+const findAllbyClient = async () => {
+  const categories = await Category.find();
+  return categories;
+}
+
 const findById = async (id: string) => {
   const category = await Category.findById(id);
   if (!category) {
@@ -43,6 +48,7 @@ const create = async (payload: any) => {
     name: payload.name,
     description: payload.description,
     slug: payload.slug,
+    thumbnail: payload.thumbnail,
   });
   await newCategory.save();
   return newCategory;
@@ -50,10 +56,18 @@ const create = async (payload: any) => {
 
 const updateById = async (id: string, payload: any) => {
   const category = await findById(id);
-  Object.assign(category, payload);
+  if (!category) throw new Error("Category not found");
+
+  // chỉ gán các field thực sự có trong payload
+  Object.keys(payload).forEach((key) => {
+    // bạn có thể whitelist các field nếu cần
+    category[key] = payload[key];
+  });
+
   await category.save();
   return category;
 };
+  
 
 const deleteById = async (id: string) => {
   const category = await findById(id);
@@ -67,4 +81,5 @@ export default {
   create,
   updateById,
   deleteById,
+  findAllbyClient
 };

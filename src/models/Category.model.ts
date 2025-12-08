@@ -22,6 +22,10 @@ const categorySchema = new Schema<ICategory>({
     lowercase: true,
     minlength: 3,
     maxlength: 255
+  },
+  thumbnail: {
+    type: String,
+    required: true,
   }
 }, {
   timestamps: true,

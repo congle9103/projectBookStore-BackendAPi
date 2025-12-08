@@ -3,6 +3,19 @@ import customerController from "../../controllers/customer.controller";
 
 const router = Router();
 
+// Get customers by client
+router.get("/client/:username", customerController.findOnebyClient);
+
+// Create customer side client
+router.post("/client", customerController.createByClient);
+
+// Put customer side client
+router.put("/client/:username", customerController.updateByClient);
+
+// Put customer add-order side client
+router.put("/client/add-order/:username", customerController.addOrderByClient);
+
+
 // GET /api/v1/customers
 router.get("/", customerController.findAll);
 

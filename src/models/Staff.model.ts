@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { hashPassword, comparePassword } from "../middlewares/hashPassword";
+import { hashPassword, comparePassword } from "../middlewares/hashPassword.middleware";
 import { IStaff } from "../types/staff.type";
 
 const staffSchema = new Schema<IStaff>( 
@@ -21,10 +21,17 @@ const staffSchema = new Schema<IStaff>(
       type: String,
       required: true,
       minLength: 8,
-      match: [
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-        "Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt",
-      ],
+      validate: {
+    validator: function (value: string) {
+      // ✅ Chỉ validate nếu là mật khẩu mới (không phải hash)
+      if (!this.isModified("password")) return true;
+      return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
+        value
+      );
+    },
+    message:
+      "Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt",
+  },
     },
     full_name: {
       type: String,
@@ -43,14 +50,14 @@ const staffSchema = new Schema<IStaff>(
     },
     phone: {
       type: String,
-      required: false,
+      required: true,
       unique: true,
       trim: true,
       match: [/^\d{10,15}$/, "Số điện thoại không hợp lệ"],
     },
     role: {
       type: String,
-      enum: ["admin", "dev"],
+      enum: ["admin", "product manager", "order staff", "marketing", "CSKH", "System staff"],
       default: "dev",
     },
     salary: {

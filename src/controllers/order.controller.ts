@@ -30,19 +30,48 @@ const toISOVnDayEnd = (value?: any): string | undefined => {
   return d.toISOString();
 };
 
+// Create order by client
+const createByClient = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const order = await orderService.createByClient(req.body);
+    sendJsonSuccess(res, order, "Order created successfully", 201);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Find one order side client
+const findAllByClient = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { customerId } = req.params;
+    const order = await orderService.findAllByClient(customerId);
+    sendJsonSuccess(res, order);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const findAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { status, startDate, endDate, search } = req.query;
+    const { status, startDate, endDate, search, payment_method } = req.query;
 
-    // Chuẩn hoá
     const filters = {
       status: status ? String(status) : undefined,
-      startDate: toISOVnDayStart(startDate),
-      endDate: toISOVnDayEnd(endDate),
+      startDate: startDate ? toISOVnDayStart(String(startDate)) : undefined,
+      endDate: endDate ? toISOVnDayEnd(String(endDate)) : undefined,
       search: search ? String(search) : undefined,
+      payment_method: payment_method ? String(payment_method) : undefined, // thêm dòng này
     };
 
-    // debug: helpful logs during development
+    // debug: helpful logs
     console.log("Orders.findAll called with filters:", filters);
 
     const orders = await orderService.findAll(filters);
@@ -97,4 +126,6 @@ export default {
   create,
   updateById,
   deleteById,
+  createByClient,
+  findAllByClient,
 };
